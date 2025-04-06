@@ -6,33 +6,33 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/tourze/yunpian-sms-bundle.svg?style=flat-square)](https://packagist.org/packages/tourze/yunpian-sms-bundle)
 [![License](https://img.shields.io/packagist/l/tourze/yunpian-sms-bundle.svg?style=flat-square)](https://packagist.org/packages/tourze/yunpian-sms-bundle)
 
-A Symfony bundle that integrates with [Yunpian SMS Service](https://www.yunpian.com/official/document/sms/zh_CN/domestic_list) API for sending and managing SMS messages.
+云片短信服务集成包，用于集成[云片短信服务](https://www.yunpian.com/official/document/sms/zh_CN/domestic_list)的API。
 
-## Features
+## 功能特性
 
-- Send domestic SMS messages
-- Manage SMS templates 
-- Query sending records
-- Check account balance
-- Sign management
-- Daily consumption statistics
-- Full integration with Symfony framework
+- 支持国内短信发送
+- 支持短信模板管理
+- 支持发送记录查询
+- 支持余额查询
+- 签名管理
+- 每日消费统计
+- 基于 Symfony 框架的完整集成
 
-## Requirements
+## 系统要求
 
 - PHP >= 8.1
 - Symfony Framework >= 6.4
 - Doctrine ORM
 
-## Installation
+## 安装
 
-### Step 1: Add the dependency with Composer
+### 步骤1: 使用Composer添加依赖
 
 ```bash
 composer require tourze/yunpian-sms-bundle
 ```
 
-### Step 2: Register the bundle in `config/bundles.php`
+### 步骤2: 在`config/bundles.php`中注册bundle
 
 ```php
 return [
@@ -41,29 +41,29 @@ return [
 ];
 ```
 
-## Configuration
+## 配置
 
-This bundle requires you to create at least one account in the database. The `Account` entity stores the API key required for authentication with Yunpian's services.
+本bundle需要您在数据库中创建至少一个账号。`Account`实体用于存储与云片服务进行认证所需的API密钥。
 
-You can create an account by inserting a record into the `ims_yunpian_account` table or use the admin interface if available:
+您可以通过向`ims_yunpian_account`表中插入记录或使用管理界面（如果可用）来创建账号：
 
 ```php
 use YunpianSmsBundle\Entity\Account;
 
-// Create a new account
+// 创建新账号
 $account = new Account();
-$account->setApiKey('your_yunpian_api_key');
+$account->setApiKey('您的云片API密钥');
 $account->setValid(true);
-$account->setRemark('Main Account');
+$account->setRemark('主账号');
 
-// Persist the account
+// 持久化账号
 $entityManager->persist($account);
 $entityManager->flush();
 ```
 
-## Quick Start
+## 快速开始
 
-### 1. Send SMS
+### 1. 发送短信
 
 ```php
 use YunpianSmsBundle\Service\SendLogService;
@@ -84,18 +84,18 @@ class YourService
         $this->sendLogService->send(
             account: $account,
             mobile: '13800138000',
-            content: 'Your verification code is 1234'
+            content: '您的验证码是1234'
         );
     }
 }
 ```
 
-### 2. Send SMS using template
+### 2. 使用模板发送短信
 
 ```php
 use YunpianSmsBundle\Repository\TemplateRepository;
 
-// In your service method
+// 在你的服务方法中
 $account = $this->accountRepository->findOneBy(['valid' => true]);
 $template = $this->templateRepository->findOneBy(['tplId' => 'your_template_id']);
 
@@ -107,37 +107,37 @@ $this->sendLogService->sendTpl(
 );
 ```
 
-### 3. Query send records
+### 3. 查询发送记录
 
 ```php
-// Set up request parameters
+// 设置请求参数
 $request = new GetSendRecordRequest();
 $request->setAccount($account);
 $request->setStartTime(new \DateTime('-7 days'));
 $request->setEndTime(new \DateTime());
 
-// Get the records
+// 获取记录
 $response = $this->apiClient->request($request);
 ```
 
-### 4. Manage templates
+### 4. 管理模板
 
 ```php
-// Sync templates from Yunpian to local database
+// 从云片同步模板到本地数据库
 $this->templateService->syncTemplates($account);
 
-// Get all templates
+// 获取所有模板
 $templates = $this->templateRepository->findBy(['account' => $account]);
 ```
 
-## API Documentation
+## API文档
 
-For detailed API documentation, please refer to the [Yunpian SMS Official Documentation](https://www.yunpian.com/official/document/sms/zh_CN/domestic_list)
+详细的API文档请参考：[云片短信官方文档](https://www.yunpian.com/official/document/sms/zh_CN/domestic_list)
 
-## Contributing
+## 贡献指南
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+请查看[CONTRIBUTING.md](CONTRIBUTING.md)了解详情。
 
-## License
+## 许可证
 
-This bundle is released under the MIT License. See the [LICENSE](LICENSE) file for more details.
+本软件包基于MIT许可证发布。详情请查看[LICENSE](LICENSE)文件。
