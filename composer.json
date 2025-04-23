@@ -23,6 +23,7 @@
     "tourze/doctrine-timestamp-bundle": "0.0.*",
     "tourze/symfony-cron-job-bundle": "0.0.*",
     "yiisoft/json": "^1.0",
+    "symfony/yaml": "^6.4 || ^7.1",
     "psr/log": "^3|^2|^1"
   },
   "autoload": {
