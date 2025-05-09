@@ -61,6 +61,9 @@ class DailyConsumption
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]
     private ?\DateTimeInterface $updateTime = null;
 
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '消费明细'])]
+    private ?array $items = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -161,5 +164,16 @@ class DailyConsumption
     public function getUpdateTime(): ?\DateTimeInterface
     {
         return $this->updateTime;
+    }
+
+    public function getItems(): ?array
+    {
+        return $this->items;
+    }
+
+    public function setItems(?array $items): self
+    {
+        $this->items = $items;
+        return $this;
     }
 }

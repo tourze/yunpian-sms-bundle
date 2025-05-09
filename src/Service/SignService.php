@@ -3,12 +3,13 @@
 namespace YunpianSmsBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use YunpianSmsBundle\Entity\Account;
 use YunpianSmsBundle\Entity\Sign;
 use YunpianSmsBundle\Repository\SignRepository;
 use YunpianSmsBundle\Request\Sign\AddSignRequest;
 use YunpianSmsBundle\Request\Sign\DeleteSignRequest;
-use YunpianSmsBundle\Request\Sign\GetSignListRequest;
+use YunpianSmsBundle\Request\Sign\GetSignRequest;
 use YunpianSmsBundle\Request\Sign\UpdateSignRequest;
 
 class SignService
@@ -17,43 +18,58 @@ class SignService
         private readonly EntityManagerInterface $entityManager,
         private readonly SignRepository $signRepository,
         private readonly SmsApiClient $apiClient,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
-    public function syncSigns(Account $account): void
+    /**
+     * 同步签名数据
+     * 
+     * @return Sign[]
+     */
+    public function syncSigns(Account $account): array
     {
-        // 获取远程签名列表
-        $request = new GetSignListRequest();
-        $request->setAccount($account);
-        $response = $this->apiClient->request($request);
-
-        foreach ($response as $signData) {
-            $sign = $this->signRepository->findOneByAccountAndSign($account, $signData['sign']);
-
-            if (!$sign) {
-                $sign = new Sign();
-                $sign->setAccount($account);
-                $sign->setSign($signData['sign']);
+        try {
+            // 获取远程签名列表
+            $request = new GetSignRequest();
+            $request->setAccount($account);
+            $response = $this->apiClient->request($request);
+            
+            $result = [];
+            
+            foreach ($response as $signData) {
+                $sign = $this->signRepository->findOneBy([
+                    'account' => $account,
+                    'sign' => $signData['sign'],
+                ]);
+    
+                if (!$sign) {
+                    $sign = new Sign();
+                    $sign->setAccount($account);
+                    $sign->setSign($signData['sign']);
+                    $this->entityManager->persist($sign);
+                }
+    
+                $sign->setApplyState($signData['apply_state']);
+                $sign->setValid($signData['enabled'] ?? false);
+                
+                // 更新其他属性
+                if (isset($signData['website'])) {
+                    $sign->setWebsite($signData['website']);
+                }
+                
+                $result[] = $sign;
             }
-
-            $sign->setApplyState($signData['apply_state']);
-            $sign->setWebsite($signData['website'] ?? null);
-            $sign->setNotify($signData['notify'] ?? true);
-            $sign->setApplyVip($signData['apply_vip'] ?? false);
-            $sign->setIsOnlyGlobal($signData['is_only_global'] ?? false);
-            $sign->setIndustryType($signData['industry_type'] ?? '其它');
-            $sign->setProveType($signData['prove_type'] ?? null);
-            $sign->setLicenseUrls($signData['license_urls'] ?? null);
-            $sign->setIdCardName($signData['id_card_name'] ?? null);
-            $sign->setIdCardNumber($signData['id_card_number'] ?? null);
-            $sign->setIdCardFront($signData['id_card_front'] ?? null);
-            $sign->setIdCardBack($signData['id_card_back'] ?? null);
-            $sign->setSignUse($signData['sign_use'] ?? 0);
-
-            $this->entityManager->persist($sign);
+    
+            $this->entityManager->flush();
+            return $result;
+        } catch (\Exception $e) {
+            $this->logger->error('同步签名失败: {message}', [
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+            return [];
         }
-
-        $this->entityManager->flush();
     }
 
     public function createSign(Sign $sign): void
@@ -80,39 +96,91 @@ class SignService
         $this->entityManager->flush();
     }
 
-    public function updateSign(Sign $sign): void
+    /**
+     * 创建签名
+     */
+    public function create(Account $account, string $signContent, ?string $remark = null): Sign
     {
-        $request = new UpdateSignRequest();
-        $request->setAccount($sign->getAccount());
-        $request->setOldSign($sign->getSign());
-        $request->setSign($sign->getSign());
-        $request->setNotify($sign->isNotify());
-        $request->setApplyVip($sign->isApplyVip());
-        $request->setIsOnlyGlobal($sign->isOnlyGlobal());
-        $request->setIndustryType($sign->getIndustryType());
-        $request->setProveType($sign->getProveType());
-        $request->setLicenseUrls($sign->getLicenseUrls());
-        $request->setIdCardName($sign->getIdCardName());
-        $request->setIdCardNumber($sign->getIdCardNumber());
-        $request->setIdCardFront($sign->getIdCardFront());
-        $request->setIdCardBack($sign->getIdCardBack());
-        $request->setSignUse($sign->getSignUse());
-
-        $response = $this->apiClient->request($request);
-        $sign->setApplyState($response['apply_state']);
-
-        $this->entityManager->flush();
+        try {
+            $request = new AddSignRequest();
+            $request->setAccount($account);
+            $request->setSign($signContent);
+            
+            $response = $this->apiClient->request($request);
+            
+            $sign = new Sign();
+            $sign->setAccount($account);
+            $sign->setSign($signContent);
+            $sign->setApplyState('SUCCESS');
+            
+            if (isset($response['sign_id'])) {
+                $sign->setSignId($response['sign_id']);
+            }
+            
+            if ($remark) {
+                $sign->setRemark($remark);
+            }
+            
+            $this->entityManager->persist($sign);
+            $this->entityManager->flush();
+            
+            return $sign;
+        } catch (\Exception $e) {
+            $this->logger->error('创建签名失败: {message}', [
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+            throw $e;
+        }
     }
 
-    public function deleteSign(Sign $sign): void
+    /**
+     * 更新签名
+     */
+    public function update(Sign $sign, string $newSignContent): Sign
     {
-        $request = new DeleteSignRequest();
-        $request->setAccount($sign->getAccount());
-        $request->setSign($sign->getSign());
+        try {
+            $request = new UpdateSignRequest();
+            $request->setAccount($sign->getAccount());
+            $request->setSign($newSignContent);
+            
+            $this->apiClient->request($request);
+            
+            $sign->setSign($newSignContent);
+            $this->entityManager->flush();
+            
+            return $sign;
+        } catch (\Exception $e) {
+            $this->logger->error('更新签名失败: {message}', [
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+            throw $e;
+        }
+    }
 
-        $this->apiClient->request($request);
-        $this->entityManager->remove($sign);
-        $this->entityManager->flush();
+    /**
+     * 删除签名
+     */
+    public function delete(Sign $sign): bool
+    {
+        try {
+            $request = new DeleteSignRequest();
+            $request->setAccount($sign->getAccount());
+            $request->setSign($sign->getSign());
+    
+            $this->apiClient->request($request);
+            $this->entityManager->remove($sign);
+            $this->entityManager->flush();
+            
+            return true;
+        } catch (\Exception $e) {
+            $this->logger->error('删除签名失败: {message}', [
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+            return false;
+        }
     }
 
     /**

@@ -93,6 +93,11 @@ class AddSignRequest extends AbstractRequest
         return $this;
     }
 
+    public function getSign(): string
+    {
+        return $this->sign;
+    }
+
     public function setNotify(bool $notify): self
     {
         $this->notify = $notify;

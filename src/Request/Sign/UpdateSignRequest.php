@@ -13,6 +13,7 @@ class UpdateSignRequest extends AbstractRequest
     private Account $account;
     private string $oldSign;
     private string $sign;
+    private ?int $signId = null;
     private bool $notify = true;
     private bool $applyVip = false;
     private bool $isOnlyGlobal = false;
@@ -47,7 +48,6 @@ class UpdateSignRequest extends AbstractRequest
     {
         $body = [
             'apikey' => $this->account->getApiKey(),
-            'old_sign' => $this->oldSign,
             'sign' => $this->sign,
             'notify' => $this->notify ? 'true' : 'false',
             'apply_vip' => $this->applyVip ? 'true' : 'false',
@@ -55,6 +55,12 @@ class UpdateSignRequest extends AbstractRequest
             'industry_type' => $this->industryType,
             'sign_use' => $this->signUse,
         ];
+        
+        if ($this->signId !== null) {
+            $body['sign_id'] = $this->signId;
+        } else {
+            $body['old_sign'] = $this->oldSign;
+        }
 
         if ($this->proveType !== null) {
             $body['prove_type'] = $this->proveType;
@@ -99,6 +105,22 @@ class UpdateSignRequest extends AbstractRequest
     {
         $this->sign = $sign;
         return $this;
+    }
+    
+    public function getSign(): string
+    {
+        return $this->sign;
+    }
+    
+    public function setSignId(int $signId): self
+    {
+        $this->signId = $signId;
+        return $this;
+    }
+    
+    public function getSignId(): ?int
+    {
+        return $this->signId;
     }
 
     public function setNotify(bool $notify): self

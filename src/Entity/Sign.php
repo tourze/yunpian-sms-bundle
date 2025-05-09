@@ -30,6 +30,9 @@ class Sign
     #[ORM\JoinColumn(nullable: false)]
     private Account $account;
 
+    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '云片签名ID'])]
+    private ?int $signId = null;
+
     #[ORM\Column(type: Types::STRING, length: 64, options: ['comment' => '签名内容'])]
     private string $sign;
 
@@ -95,6 +98,9 @@ class Sign
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]
     private ?\DateTimeInterface $updateTime = null;
 
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '备注'])]
+    private ?string $remark = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -108,6 +114,17 @@ class Sign
     public function setAccount(Account $account): self
     {
         $this->account = $account;
+        return $this;
+    }
+
+    public function getSignId(): ?int
+    {
+        return $this->signId;
+    }
+
+    public function setSignId(?int $signId): self
+    {
+        $this->signId = $signId;
         return $this;
     }
 
@@ -295,5 +312,16 @@ class Sign
     public function getUpdateTime(): ?\DateTimeInterface
     {
         return $this->updateTime;
+    }
+
+    public function getRemark(): ?string
+    {
+        return $this->remark;
+    }
+
+    public function setRemark(?string $remark): self
+    {
+        $this->remark = $remark;
+        return $this;
     }
 }

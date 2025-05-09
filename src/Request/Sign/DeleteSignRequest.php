@@ -9,6 +9,7 @@ class DeleteSignRequest extends AbstractRequest
 {
     private Account $account;
     private string $sign;
+    private ?int $signId = null;
 
     public function getMethod(): string
     {
@@ -30,10 +31,17 @@ class DeleteSignRequest extends AbstractRequest
 
     public function getBody(): array
     {
-        return [
+        $body = [
             'apikey' => $this->account->getApiKey(),
-            'sign' => $this->sign,
         ];
+        
+        if ($this->signId !== null) {
+            $body['sign_id'] = $this->signId;
+        } else {
+            $body['sign'] = $this->sign;
+        }
+        
+        return $body;
     }
 
     public function setAccount(Account $account): self
@@ -46,5 +54,21 @@ class DeleteSignRequest extends AbstractRequest
     {
         $this->sign = $sign;
         return $this;
+    }
+    
+    public function getSign(): string
+    {
+        return $this->sign;
+    }
+    
+    public function setSignId(int $signId): self
+    {
+        $this->signId = $signId;
+        return $this;
+    }
+    
+    public function getSignId(): ?int
+    {
+        return $this->signId;
     }
 }
