@@ -9,7 +9,7 @@ class GetSendStatusRequest implements RequestInterface
     private string $apiKey;
     private array $sids = [];
 
-    public function getRequestMethod(): ?string
+    public function getRequestMethod(): string
     {
         return 'POST';
     }
@@ -19,13 +19,18 @@ class GetSendStatusRequest implements RequestInterface
         return '/v2/sms/pull_status.json';
     }
 
-    public function getRequestOptions(): ?array
+    public function getRequestOptions(): array
     {
+        $params = [
+            'apikey' => $this->apiKey
+        ];
+        
+        if (!empty($this->sids)) {
+            $params['sid'] = implode(',', $this->sids);
+        }
+        
         return [
-            'form_params' => [
-                'apikey' => $this->apiKey,
-                'sid' => implode(',', $this->sids),
-            ],
+            'form_params' => $params
         ];
     }
 
@@ -33,12 +38,14 @@ class GetSendStatusRequest implements RequestInterface
     {
         $this->apiKey = $account->getApiKey();
     }
-
-    /**
-     * @param string[] $sids
-     */
+    
     public function setSids(array $sids): void
     {
         $this->sids = $sids;
+    }
+    
+    public function getSids(): array
+    {
+        return $this->sids;
     }
 }

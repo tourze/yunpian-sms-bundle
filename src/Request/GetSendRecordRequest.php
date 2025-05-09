@@ -2,16 +2,18 @@
 
 namespace YunpianSmsBundle\Request;
 
+use YunpianSmsBundle\Entity\Account;
+
 class GetSendRecordRequest implements RequestInterface
 {
     private string $apiKey;
     private \DateTimeInterface $startTime;
     private \DateTimeInterface $endTime;
     private ?string $mobile = null;
-    private int $pageNum = 1;
-    private int $pageSize = 100;
+    private ?string $pageNum = null;
+    private ?string $pageSize = null;
 
-    public function getRequestMethod(): ?string
+    public function getRequestMethod(): string
     {
         return 'POST';
     }
@@ -21,51 +23,72 @@ class GetSendRecordRequest implements RequestInterface
         return '/v2/sms/get_record.json';
     }
 
-    public function getRequestOptions(): ?array
+    public function getRequestOptions(): array
     {
         $params = [
             'apikey' => $this->apiKey,
             'start_time' => $this->startTime->format('Y-m-d H:i:s'),
-            'end_time' => $this->endTime->format('Y-m-d H:i:s'),
-            'page_num' => $this->pageNum,
-            'page_size' => $this->pageSize,
+            'end_time' => $this->endTime->format('Y-m-d H:i:s')
         ];
-
+        
         if ($this->mobile) {
             $params['mobile'] = $this->mobile;
         }
-
+        
+        if ($this->pageNum) {
+            $params['page_num'] = $this->pageNum;
+        }
+        
+        if ($this->pageSize) {
+            $params['page_size'] = $this->pageSize;
+        }
+        
         return [
-            'form_params' => $params,
+            'form_params' => $params
         ];
     }
 
-    public function setAccount(\YunpianSmsBundle\Entity\Account $account): void
+    public function setAccount(Account $account): void
     {
         $this->apiKey = $account->getApiKey();
     }
-
+    
     public function setStartTime(\DateTimeInterface $startTime): void
     {
         $this->startTime = $startTime;
     }
-
+    
+    public function getStartTime(): \DateTimeInterface
+    {
+        return $this->startTime;
+    }
+    
     public function setEndTime(\DateTimeInterface $endTime): void
     {
         $this->endTime = $endTime;
     }
-
+    
+    public function getEndTime(): \DateTimeInterface
+    {
+        return $this->endTime;
+    }
+    
     public function setMobile(?string $mobile): void
     {
         $this->mobile = $mobile;
     }
-
-    public function setPageNum(int $pageNum): void
+    
+    public function getMobile(): ?string
+    {
+        return $this->mobile;
+    }
+    
+    public function setPageNum(?string $pageNum): void
     {
         $this->pageNum = $pageNum;
     }
-
-    public function setPageSize(int $pageSize): void
+    
+    public function setPageSize(?string $pageSize): void
     {
         $this->pageSize = $pageSize;
     }

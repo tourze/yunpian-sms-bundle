@@ -62,4 +62,9 @@ class SendTplSmsRequest implements RequestInterface
     {
         $this->uid = $uid;
     }
+
+    public function getTplId(): string
+    {
+        return $this->tplId;
+    }
 }
