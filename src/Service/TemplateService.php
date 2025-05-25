@@ -104,7 +104,7 @@ class TemplateService
             $request = new AddTemplateRequest();
             $request->setAccount($account);
             $request->setContent($tplContent);
-            $request->setNotifyType($notify ? NotifyTypeEnum::ALWAYS : NotifyTypeEnum::FAILURE);
+            $request->setNotifyType($notify ? NotifyTypeEnum::ALWAYS : NotifyTypeEnum::ONLY_FAILED);
             
             $response = $this->apiClient->request($request);
             
@@ -112,7 +112,7 @@ class TemplateService
             $template->setAccount($account);
             $template->setTplId($response['tpl_id']);
             $template->setContent($tplContent);
-            $template->setNotifyType($notify ? NotifyTypeEnum::ALWAYS : NotifyTypeEnum::FAILURE);
+            $template->setNotifyType($notify ? NotifyTypeEnum::ALWAYS : NotifyTypeEnum::ONLY_FAILED);
             $template->setTemplateType(TemplateTypeEnum::NOTIFICATION);
             $template->setCheckStatus('SUCCESS');
             
