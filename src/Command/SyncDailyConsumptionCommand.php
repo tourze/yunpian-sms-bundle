@@ -44,7 +44,7 @@ class SyncDailyConsumptionCommand extends Command
             try {
                 $this->dailyConsumptionService->syncDailyConsumption($account, $date);
                 $output->writeln('同步成功');
-            } catch  (\Throwable $e) {
+            } catch (\Throwable $e) {
                 $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
                 return Command::FAILURE;
             }

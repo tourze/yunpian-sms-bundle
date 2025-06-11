@@ -28,7 +28,7 @@ class SyncSendStatusCommand extends Command
             $this->sendLogService->syncStatus();
             $output->writeln('同步成功');
             return Command::SUCCESS;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
             return Command::FAILURE;
         }

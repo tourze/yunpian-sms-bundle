@@ -80,7 +80,7 @@ class DailyConsumptionService
             
             $this->entityManager->flush();
             return $consumption;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('同步每日消费统计失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,

@@ -64,7 +64,7 @@ class TemplateService
     
             $this->entityManager->flush();
             return $result;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('同步模板失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -120,7 +120,7 @@ class TemplateService
             $this->entityManager->flush();
             
             return $template;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('创建模板失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -146,7 +146,7 @@ class TemplateService
             $this->entityManager->flush();
             
             return $template;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('更新模板失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -170,7 +170,7 @@ class TemplateService
             $this->entityManager->flush();
             
             return true;
-        } catch  (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('删除模板失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
