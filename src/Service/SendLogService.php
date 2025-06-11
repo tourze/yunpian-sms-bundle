@@ -134,7 +134,7 @@ class SendLogService
                 }
 
                 $this->entityManager->flush();
-            } catch (\Exception $e) {
+            } catch  (\Throwable $e) {
                 // 记录错误日志但继续处理其他组
                 $this->logger->error('同步发送状态失败: {message}', [
                     'message' => $e->getMessage(),
@@ -203,7 +203,7 @@ class SendLogService
                 }
 
                 $pageNum++;
-            } catch (\Exception $e) {
+            } catch  (\Throwable $e) {
                 $this->logger->error('同步发送记录失败: {message}', [
                     'message' => $e->getMessage(),
                     'exception' => $e,

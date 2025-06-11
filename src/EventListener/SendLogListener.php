@@ -49,7 +49,7 @@ class SendLogListener
             $sendLog->setSid($newSendLog->getSid());
             $sendLog->setCount($newSendLog->getCount());
             $sendLog->setFee($newSendLog->getFee());
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             // 记录错误但不阻止实体保存
             $this->logger->error('短信发送失败: {message}', [
                 'message' => $e->getMessage(),

@@ -32,7 +32,7 @@ class SyncTemplateCommand extends Command
             try {
                 $this->templateService->syncTemplates($account);
                 $output->writeln('同步成功');
-            } catch (\Exception $e) {
+            } catch  (\Throwable $e) {
                 $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
                 return Command::FAILURE;
             }

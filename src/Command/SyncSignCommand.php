@@ -32,7 +32,7 @@ class SyncSignCommand extends Command
             try {
                 $this->signService->syncSigns($account);
                 $output->writeln('同步成功');
-            } catch (\Exception $e) {
+            } catch  (\Throwable $e) {
                 $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
                 return Command::FAILURE;
             }

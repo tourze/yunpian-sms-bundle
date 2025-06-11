@@ -63,7 +63,7 @@ class SignService
     
             $this->entityManager->flush();
             return $result;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('同步签名失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -125,7 +125,7 @@ class SignService
             $this->entityManager->flush();
             
             return $sign;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('创建签名失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -150,7 +150,7 @@ class SignService
             $this->entityManager->flush();
             
             return $sign;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('更新签名失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
@@ -174,7 +174,7 @@ class SignService
             $this->entityManager->flush();
             
             return true;
-        } catch (\Exception $e) {
+        } catch  (\Throwable $e) {
             $this->logger->error('删除签名失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
