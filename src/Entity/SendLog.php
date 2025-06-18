@@ -5,8 +5,6 @@ namespace YunpianSmsBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use YunpianSmsBundle\Enum\SendStatusEnum;
 use YunpianSmsBundle\Repository\SendLogRepository;
 
@@ -15,8 +13,6 @@ use YunpianSmsBundle\Repository\SendLogRepository;
 class SendLog
 {
     use TimestampableAware;
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]

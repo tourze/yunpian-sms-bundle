@@ -7,10 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
-use Tourze\EasyAdmin\Attribute\Column\BoolColumn;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Field\FormField;
 use YunpianSmsBundle\Enum\NotifyTypeEnum;
 use YunpianSmsBundle\Enum\TemplateTypeEnum;
 use YunpianSmsBundle\Repository\TemplateRepository;
@@ -20,8 +16,6 @@ use YunpianSmsBundle\Repository\TemplateRepository;
 class Template
 {
     use TimestampableAware;
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -61,12 +55,9 @@ class Template
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '审核结果地址'])]
     private ?string $callback = null;
 
-    #[BoolColumn]
     #[IndexColumn]
     #[TrackColumn]
     #[ORM\Column(type: Types::BOOLEAN, nullable: true, options: ['comment' => '有效', 'default' => 0])]
-    #[ListColumn(order: 97)]
-    #[FormField(order: 97)]
     private ?bool $valid = false;
 
     public function getId(): ?int
