@@ -4,12 +4,9 @@ namespace YunpianSmsBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
-use Tourze\DoctrineTimestampBundle\Attribute\UpdateTimeColumn;
+use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use YunpianSmsBundle\Repository\DailyConsumptionRepository;
 
 #[ORM\Entity(repositoryClass: DailyConsumptionRepository::class)]
@@ -17,6 +14,7 @@ use YunpianSmsBundle\Repository\DailyConsumptionRepository;
 #[ORM\UniqueConstraint(name: 'uniq_account_date', columns: ['account_id', 'date'])]
 class DailyConsumption
 {
+    use TimestampableAware;
     #[ListColumn(order: -1)]
     #[ExportColumn]
     #[ORM\Id]
@@ -45,21 +43,6 @@ class DailyConsumption
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '未知短信条数'])]
     private int $totalUnknownCount = 0;
-
-    #[Filterable]
-    #[IndexColumn]
-    #[ListColumn(order: 98, sorter: true)]
-    #[ExportColumn]
-    #[CreateTimeColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '创建时间'])]
-    private ?\DateTimeInterface $createTime = null;
-
-    #[UpdateTimeColumn]
-    #[ListColumn(order: 99, sorter: true)]
-    #[Filterable]
-    #[ExportColumn]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]
-    private ?\DateTimeInterface $updateTime = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '消费明细'])]
     private ?array $items = null;
@@ -144,29 +127,7 @@ class DailyConsumption
     {
         $this->totalUnknownCount = $totalUnknownCount;
         return $this;
-    }
-
-    public function setCreateTime(?\DateTimeInterface $createdAt): void
-    {
-        $this->createTime = $createdAt;
-    }
-
-    public function getCreateTime(): ?\DateTimeInterface
-    {
-        return $this->createTime;
-    }
-
-    public function setUpdateTime(?\DateTimeInterface $updateTime): void
-    {
-        $this->updateTime = $updateTime;
-    }
-
-    public function getUpdateTime(): ?\DateTimeInterface
-    {
-        return $this->updateTime;
-    }
-
-    public function getItems(): ?array
+    }public function getItems(): ?array
     {
         return $this->items;
     }
