@@ -46,7 +46,6 @@ class SendTplSmsRequestTest extends TestCase
         $options = $this->request->getRequestOptions();
         
         // 断言结果
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('form_params', $options);
         $this->assertArrayHasKey('apikey', $options['form_params']);
         $this->assertArrayHasKey('mobile', $options['form_params']);
@@ -75,7 +74,6 @@ class SendTplSmsRequestTest extends TestCase
         $options = $this->request->getRequestOptions();
         
         // 断言结果
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('form_params', $options);
         $this->assertArrayHasKey('apikey', $options['form_params']);
         $this->assertArrayHasKey('mobile', $options['form_params']);
@@ -104,7 +102,6 @@ class SendTplSmsRequestTest extends TestCase
         $options = $this->request->getRequestOptions();
         
         // 断言结果
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('form_params', $options);
         $this->assertArrayHasKey('mobile', $options['form_params']);
         $this->assertEquals('13800138000,13900139000', $options['form_params']['mobile']);

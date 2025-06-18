@@ -82,7 +82,7 @@ class TemplateTest extends TestCase
     {
         $template = new Template();
         
-        $createTime = new \DateTime('2023-05-01 12:00:00');
+        $createTime = new \DateTimeImmutable('2023-05-01 12:00:00');
         $template->setCreateTime($createTime);
         
         $this->assertSame($createTime, $template->getCreateTime());
@@ -92,7 +92,7 @@ class TemplateTest extends TestCase
     {
         $template = new Template();
         
-        $updateTime = new \DateTime('2023-05-01 12:00:00');
+        $updateTime = new \DateTimeImmutable('2023-05-01 12:00:00');
         $template->setUpdateTime($updateTime);
         
         $this->assertSame($updateTime, $template->getUpdateTime());
@@ -108,7 +108,7 @@ class TemplateTest extends TestCase
         $template->setContent('您的验证码是#code#，有效期#time#分钟');
         $template->setCheckStatus('SUCCESS');
         $template->setCheckReply(null);
-        $template->setCreateTime(new \DateTime('2023-05-01 12:00:00'));
+        $template->setCreateTime(new \DateTimeImmutable('2023-05-01 12:00:00'));
         
         $this->assertSame($this->account, $template->getAccount());
         $this->assertSame('template-001', $template->getTplId());
