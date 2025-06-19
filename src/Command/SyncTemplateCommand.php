@@ -10,11 +10,12 @@ use YunpianSmsBundle\Repository\AccountRepository;
 use YunpianSmsBundle\Service\TemplateService;
 
 #[AsCommand(
-    name: 'yunpian:sync-template',
+    name: self::NAME,
     description: '同步云片短信模板'
 )]
 class SyncTemplateCommand extends Command
 {
+    public const NAME = 'yunpian:sync-template';
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly TemplateService $templateService,

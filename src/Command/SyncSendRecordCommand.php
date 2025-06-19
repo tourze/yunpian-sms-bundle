@@ -13,12 +13,13 @@ use YunpianSmsBundle\Repository\SendLogRepository;
 use YunpianSmsBundle\Service\SendLogService;
 
 #[AsCommand(
-    name: 'yunpian:sync-send-record',
+    name: self::NAME,
     description: '同步云片短信发送记录'
 )]
 #[AsCronTask('0 */4 * * *')]
 class SyncSendRecordCommand extends Command
 {
+    public const NAME = 'yunpian:sync-send-record';
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly SendLogRepository $sendLogRepository,
@@ -36,15 +37,18 @@ class SyncSendRecordCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $startTime = $input->getOption('start-time')
-            ? new \DateTime($input->getOption('start-time'))
+        $startTimeOption = $input->getOption('start-time');
+        $startTime = is_string($startTimeOption) && $startTimeOption !== ''
+            ? new \DateTime($startTimeOption)
             : $this->getDefaultStartTime();
 
-        $endTime = $input->getOption('end-time')
-            ? new \DateTime($input->getOption('end-time'))
+        $endTimeOption = $input->getOption('end-time');
+        $endTime = is_string($endTimeOption) && $endTimeOption !== ''
+            ? new \DateTime($endTimeOption)
             : new \DateTime();
 
-        $mobile = $input->getOption('mobile');
+        $mobileOption = $input->getOption('mobile');
+        $mobile = is_string($mobileOption) ? $mobileOption : null;
 
         $accounts = $this->accountRepository->findAllValid();
 
@@ -66,8 +70,8 @@ class SyncSendRecordCommand extends Command
     private function getDefaultStartTime(): \DateTime
     {
         $lastSendTime = $this->sendLogRepository->findLastSendTime();
-        if ($lastSendTime) {
-            return $lastSendTime;
+        if ($lastSendTime !== null) {
+            return $lastSendTime instanceof \DateTime ? $lastSendTime : new \DateTime($lastSendTime->format('Y-m-d H:i:s'));
         }
 
         // 如果没有记录，默认同步最近24小时的数据

@@ -4,6 +4,7 @@ namespace YunpianSmsBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
@@ -11,7 +12,7 @@ use YunpianSmsBundle\Repository\SignRepository;
 
 #[ORM\Entity(repositoryClass: SignRepository::class)]
 #[ORM\Table(name: 'ims_yunpian_sign', options: ['comment' => '云片短信签名'])]
-class Sign
+class Sign implements Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -50,6 +51,9 @@ class Sign
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '证明文件类型'])]
     private ?int $proveType = null;
 
+    /**
+     * @var array<int, string>|null
+     */
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '证明文件URL列表'])]
     private ?array $licenseUrls = null;
 
@@ -191,11 +195,17 @@ class Sign
         return $this;
     }
 
+    /**
+     * @return array<int, string>|null
+     */
     public function getLicenseUrls(): ?array
     {
         return $this->licenseUrls;
     }
 
+    /**
+     * @param array<int, string>|null $licenseUrls
+     */
     public function setLicenseUrls(?array $licenseUrls): self
     {
         $this->licenseUrls = $licenseUrls;
@@ -276,5 +286,14 @@ class Sign
     {
         $this->remark = $remark;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s (%s)',
+            $this->getSign(),
+            $this->getApplyState()
+        );
     }
 }

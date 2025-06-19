@@ -4,6 +4,7 @@ namespace YunpianSmsBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
@@ -13,7 +14,7 @@ use YunpianSmsBundle\Repository\TemplateRepository;
 
 #[ORM\Entity(repositoryClass: TemplateRepository::class)]
 #[ORM\Table(name: 'ims_yunpian_template', options: ['comment' => '云片短信模板'])]
-class Template
+class Template implements Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -195,4 +196,15 @@ class Template
         $this->valid = $valid;
 
         return $this;
-    }}
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s - %s (%s)',
+            $this->getTplId(),
+            $this->getTitle(),
+            $this->getCheckStatus()
+        );
+    }
+}

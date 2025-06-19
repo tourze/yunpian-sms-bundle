@@ -4,6 +4,7 @@ namespace YunpianSmsBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineTrackBundle\Attribute\TrackColumn;
@@ -11,7 +12,7 @@ use YunpianSmsBundle\Repository\AccountRepository;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 #[ORM\Table(name: 'ims_yunpian_account', options: ['comment' => '云片账号'])]
-class Account
+class Account implements Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -67,4 +68,10 @@ class Account
     {
         $this->remark = $remark;
         return $this;
-    }}
+    }
+
+    public function __toString(): string
+    {
+        return $this->getRemark() ?? $this->getApiKey();
+    }
+}

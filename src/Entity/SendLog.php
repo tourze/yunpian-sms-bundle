@@ -4,13 +4,14 @@ namespace YunpianSmsBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use YunpianSmsBundle\Enum\SendStatusEnum;
 use YunpianSmsBundle\Repository\SendLogRepository;
 
 #[ORM\Entity(repositoryClass: SendLogRepository::class)]
 #[ORM\Table(name: 'ims_yunpian_send_log', options: ['comment' => '云片短信发送记录'])]
-class SendLog
+class SendLog implements Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -50,8 +51,8 @@ class SendLog
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '状态说明'])]
     private ?string $statusMsg = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '用户接收时间'])]
-    private ?\DateTimeInterface $receiveTime = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '用户接收时间'])]
+    private ?\DateTimeImmutable $receiveTime = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true, options: ['comment' => '运营商错误码'])]
     private ?string $errorMsg = null;
@@ -189,14 +190,18 @@ class SendLog
         return $this;
     }
 
-    public function getReceiveTime(): ?\DateTimeInterface
+    public function getReceiveTime(): ?\DateTimeImmutable
     {
         return $this->receiveTime;
     }
 
     public function setReceiveTime(?\DateTimeInterface $receiveTime): self
     {
-        $this->receiveTime = $receiveTime;
+        if ($receiveTime === null) {
+            $this->receiveTime = null;
+        } else {
+            $this->receiveTime = $receiveTime instanceof \DateTimeImmutable ? $receiveTime : \DateTimeImmutable::createFromInterface($receiveTime);
+        }
         return $this;
     }
 
@@ -209,4 +214,15 @@ class SendLog
     {
         $this->errorMsg = $errorMsg;
         return $this;
-    }}
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s - %s (%s)',
+            $this->getMobile(),
+            mb_substr($this->getContent(), 0, 20) . '...',
+            $this->getStatus()->value
+        );
+    }
+}

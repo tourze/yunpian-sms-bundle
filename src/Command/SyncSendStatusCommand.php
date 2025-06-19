@@ -10,12 +10,13 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use YunpianSmsBundle\Service\SendLogService;
 
 #[AsCommand(
-    name: 'yunpian:sync-send-status',
+    name: self::NAME,
     description: '同步云片短信发送状态'
 )]
 #[AsCronTask('*/5 * * * *')]
 class SyncSendStatusCommand extends Command
 {
+    public const NAME = 'yunpian:sync-send-status';
     public function __construct(
         private readonly SendLogService $sendLogService,
     ) {

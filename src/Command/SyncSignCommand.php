@@ -10,11 +10,12 @@ use YunpianSmsBundle\Repository\AccountRepository;
 use YunpianSmsBundle\Service\SignService;
 
 #[AsCommand(
-    name: 'yunpian:sync-sign',
+    name: self::NAME,
     description: '同步云片短信签名'
 )]
 class SyncSignCommand extends Command
 {
+    public const NAME = 'yunpian:sync-sign';
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly SignService $signService,

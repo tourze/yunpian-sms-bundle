@@ -4,13 +4,14 @@ namespace YunpianSmsBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use YunpianSmsBundle\Repository\DailyConsumptionRepository;
 
 #[ORM\Entity(repositoryClass: DailyConsumptionRepository::class)]
 #[ORM\Table(name: 'ims_yunpian_daily_consumption', options: ['comment' => '云片短信日消耗'])]
 #[ORM\UniqueConstraint(name: 'uniq_account_date', columns: ['account_id', 'date'])]
-class DailyConsumption
+class DailyConsumption implements Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -22,8 +23,8 @@ class DailyConsumption
     #[ORM\JoinColumn(nullable: false)]
     private Account $account;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, options: ['comment' => '消耗日期'])]
-    private \DateTimeInterface $date;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, options: ['comment' => '消耗日期'])]
+    private \DateTimeImmutable $date;
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '总计短信条数'])]
     private int $totalCount = 0;
@@ -40,6 +41,9 @@ class DailyConsumption
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '未知短信条数'])]
     private int $totalUnknownCount = 0;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '消费明细'])]
     private ?array $items = null;
 
@@ -59,14 +63,14 @@ class DailyConsumption
         return $this;
     }
 
-    public function getDate(): \DateTimeInterface
+    public function getDate(): \DateTimeImmutable
     {
         return $this->date;
     }
 
     public function setDate(\DateTimeInterface $date): self
     {
-        $this->date = $date;
+        $this->date = $date instanceof \DateTimeImmutable ? $date : \DateTimeImmutable::createFromInterface($date);
         return $this;
     }
 
@@ -123,14 +127,31 @@ class DailyConsumption
     {
         $this->totalUnknownCount = $totalUnknownCount;
         return $this;
-    }public function getItems(): ?array
+    }/**
+     * @return array<string, mixed>|null
+     */
+    public function getItems(): ?array
     {
         return $this->items;
     }
 
+    /**
+     * @param array<string, mixed>|null $items
+     */
     public function setItems(?array $items): self
     {
         $this->items = $items;
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s - %s (总计: %d条, 费用: %s)',
+            $this->getAccount(),
+            $this->getDate()->format('Y-m-d'),
+            $this->getTotalCount(),
+            $this->getTotalFee()
+        );
     }
 }

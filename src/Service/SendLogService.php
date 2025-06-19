@@ -100,9 +100,9 @@ class SendLogService
             }
         }
 
-        foreach ($groups as $sendLogs) {
-            $account = $sendLogs[0]->getAccount();
-            $sids = array_filter(array_map(fn(SendLog $sendLog) => $sendLog->getSid(), $sendLogs));
+        foreach ($groups as $groupedSendLogs) {
+            $account = $groupedSendLogs[0]->getAccount();
+            $sids = array_filter(array_map(fn(SendLog $sendLog) => $sendLog->getSid(), $groupedSendLogs));
             if (empty($sids)) {
                 continue;
             }
@@ -116,7 +116,7 @@ class SendLogService
                 
                 // 用 Map 优化查找
                 $sendLogMap = [];
-                foreach ($sendLogs as $sendLog) {
+                foreach ($groupedSendLogs as $sendLog) {
                     if ($sendLog->getSid()) {
                         $sendLogMap[$sendLog->getSid()] = $sendLog;
                     }
@@ -128,7 +128,7 @@ class SendLogService
                         $sendLog = $sendLogMap[$sid];
                         $sendLog->setStatus($status['status'] ?? null);
                         $sendLog->setStatusMsg($status['status_msg'] ?? null);
-                        $sendLog->setReceiveTime(isset($status['user_receive_time']) ? new \DateTime($status['user_receive_time']) : null);
+                        $sendLog->setReceiveTime(isset($status['user_receive_time']) ? new \DateTimeImmutable($status['user_receive_time']) : null);
                         $sendLog->setErrorMsg($status['error_msg'] ?? null);
                     }
                 }
@@ -189,7 +189,7 @@ class SendLogService
                     $sendLog->setUid($record['uid'] ?? null);
                     $sendLog->setStatus($record['status'] ?? null);
                     $sendLog->setStatusMsg($record['status_msg'] ?? null);
-                    $sendLog->setReceiveTime(isset($record['user_receive_time']) ? new \DateTime($record['user_receive_time']) : null);
+                    $sendLog->setReceiveTime(isset($record['user_receive_time']) ? new \DateTimeImmutable($record['user_receive_time']) : null);
                     $sendLog->setErrorMsg($record['error_msg'] ?? null);
 
                     if (++$count % $pageSize === 0) {

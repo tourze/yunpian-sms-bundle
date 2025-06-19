@@ -12,12 +12,13 @@ use YunpianSmsBundle\Repository\AccountRepository;
 use YunpianSmsBundle\Service\DailyConsumptionService;
 
 #[AsCommand(
-    name: 'yunpian:sync-daily-consumption',
+    name: self::NAME,
     description: '同步云片短信日消耗'
 )]
 #[AsCronTask('15 */4 * * *')]
 class SyncDailyConsumptionCommand extends Command
 {
+    public const NAME = 'yunpian:sync-daily-consumption';
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly DailyConsumptionService $dailyConsumptionService,
@@ -32,8 +33,9 @@ class SyncDailyConsumptionCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $date = $input->getOption('date')
-            ? new \DateTime($input->getOption('date'))
+        $dateOption = $input->getOption('date');
+        $date = is_string($dateOption) && $dateOption !== ''
+            ? new \DateTime($dateOption)
             : new \DateTime('yesterday');
 
         $accounts = $this->accountRepository->findAllValid();
