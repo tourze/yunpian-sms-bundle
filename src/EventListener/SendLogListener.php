@@ -22,13 +22,13 @@ class SendLogListener
     public function prePersist(SendLog $sendLog, PrePersistEventArgs $args): void
     {
         // 如果已经有 sid，说明是从 API 返回后设置的，不需要再次发送
-        if ($sendLog->getSid()) {
+        if ($sendLog->getSid() !== null && $sendLog->getSid() !== '') {
             return;
         }
 
         try {
             // 根据是否有模板来决定发送方式
-            if ($sendLog->getTemplate()) {
+            if ($sendLog->getTemplate() !== null) {
                 $newSendLog = $this->sendLogService->sendTpl(
                     $sendLog->getAccount(),
                     $sendLog->getTemplate(),

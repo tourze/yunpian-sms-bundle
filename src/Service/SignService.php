@@ -195,4 +195,27 @@ class SignService
     {
         return $this->signRepository->findOneByAccountAndSign($account, $sign);
     }
+
+    public function updateSign(Sign $sign): void
+    {
+        $request = new UpdateSignRequest();
+        $request->setAccount($sign->getAccount());
+        $request->setSign($sign->getSign());
+        
+        $response = $this->apiClient->request($request);
+        $sign->setApplyState($response['apply_state'] ?? 'PENDING');
+        
+        $this->entityManager->flush();
+    }
+
+    public function deleteSign(Sign $sign): void
+    {
+        $request = new DeleteSignRequest();
+        $request->setAccount($sign->getAccount());
+        $request->setSign($sign->getSign());
+        
+        $this->apiClient->request($request);
+        $this->entityManager->remove($sign);
+        $this->entityManager->flush();
+    }
 }
