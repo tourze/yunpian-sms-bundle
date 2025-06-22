@@ -27,7 +27,7 @@ class SendSmsRequest implements RequestInterface
             'text' => $this->content,
         ];
 
-        if ($this->uid) {
+        if ($this->uid !== null) {
             $params['uid'] = $this->uid;
         }
 

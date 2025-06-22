@@ -39,11 +39,12 @@ class SendLogRepository extends ServiceEntityRepository
      */
     public function findLastSendTime(): ?\DateTimeInterface
     {
-        return $this->createQueryBuilder('s')
-            ->select('s.createdAt')
+        $result = $this->createQueryBuilder('s')
             ->orderBy('s.createdAt', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getOneOrNullResult();
+            
+        return $result?->getCreatedAt();
     }
 }

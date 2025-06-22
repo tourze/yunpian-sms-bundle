@@ -24,7 +24,7 @@ class SignService
 
     /**
      * 同步签名数据
-     * 
+     *
      * @return Sign[]
      */
     public function syncSigns(Account $account): array
@@ -43,7 +43,7 @@ class SignService
                     'sign' => $signData['sign'],
                 ]);
     
-                if (!$sign) {
+                if ($sign === null) {
                     $sign = new Sign();
                     $sign->setAccount($account);
                     $sign->setSign($signData['sign']);
@@ -117,7 +117,7 @@ class SignService
                 $sign->setSignId($response['sign_id']);
             }
             
-            if ($remark) {
+            if ($remark !== null) {
                 $sign->setRemark($remark);
             }
             

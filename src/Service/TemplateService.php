@@ -26,7 +26,7 @@ class TemplateService
 
     /**
      * 同步模板
-     * 
+     *
      * @return Template[]
      */
     public function syncTemplates(Account $account): array
@@ -45,7 +45,7 @@ class TemplateService
                     'tplId' => $tpl['tpl_id'],
                 ]);
     
-                if (!$template) {
+                if ($template === null) {
                     $template = new Template();
                     $template->setAccount($account);
                     $template->setTplId($tpl['tpl_id']);

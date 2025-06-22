@@ -42,7 +42,7 @@ class DailyConsumption implements Stringable
     private int $totalUnknownCount = 0;
 
     /**
-     * @var array<string, mixed>|null
+     * @var array<array-key, mixed>|null
      */
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '消费明细'])]
     private ?array $items = null;
@@ -127,8 +127,10 @@ class DailyConsumption implements Stringable
     {
         $this->totalUnknownCount = $totalUnknownCount;
         return $this;
-    }/**
-     * @return array<string, mixed>|null
+    }
+    
+    /**
+     * @return array<array-key, mixed>|null
      */
     public function getItems(): ?array
     {
@@ -136,7 +138,7 @@ class DailyConsumption implements Stringable
     }
 
     /**
-     * @param array<string, mixed>|null $items
+     * @param array<array-key, mixed>|null $items
      */
     public function setItems(?array $items): self
     {

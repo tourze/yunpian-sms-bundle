@@ -95,7 +95,7 @@ class SendLogService
         /** @var SendLog[][] $groups */
         $groups = [];
         foreach ($sendLogs as $sendLog) {
-            if ($sendLog->getSid()) { // 只处理有 sid 的记录
+            if ($sendLog->getSid() !== null) { // 只处理有 sid 的记录
                 $groups[$sendLog->getAccount()->getId()][] = $sendLog;
             }
         }
@@ -117,7 +117,7 @@ class SendLogService
                 // 用 Map 优化查找
                 $sendLogMap = [];
                 foreach ($groupedSendLogs as $sendLog) {
-                    if ($sendLog->getSid()) {
+                    if ($sendLog->getSid() !== null) {
                         $sendLogMap[$sendLog->getSid()] = $sendLog;
                     }
                 }
@@ -160,8 +160,8 @@ class SendLogService
                 $request->setStartTime($startTime);
                 $request->setEndTime($endTime);
                 $request->setMobile($mobile);
-                $request->setPageNum($pageNum);
-                $request->setPageSize($pageSize);
+                $request->setPageNum((string)$pageNum);
+                $request->setPageSize((string)$pageSize);
 
                 $response = $this->apiClient->request($request);
                 if (empty($response)) {
@@ -175,7 +175,7 @@ class SendLogService
                     }
 
                     $sendLog = $this->sendLogRepository->findOneBySid($sid);
-                    if (!$sendLog) {
+                    if ($sendLog === null) {
                         $sendLog = new SendLog();
                         $sendLog->setAccount($account);
                         $sendLog->setSid($sid);

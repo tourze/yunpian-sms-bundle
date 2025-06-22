@@ -352,7 +352,7 @@ class SendLogServiceTest extends TestCase
     {
         $sendLog = new SendLog();
         $sendLog->setAccount($account);
-        $sendLog->setSid($sid);
+        $sendLog->setSid((string)$sid);
         $sendLog->setMobile('13800138000');
         $sendLog->setContent('测试内容');
         return $sendLog;

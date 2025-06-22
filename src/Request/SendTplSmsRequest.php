@@ -29,7 +29,7 @@ class SendTplSmsRequest implements RequestInterface
             'tpl_value' => urlencode(http_build_query($this->tplValue)),
         ];
 
-        if ($this->uid) {
+        if ($this->uid !== null) {
             $params['uid'] = $this->uid;
         }
 

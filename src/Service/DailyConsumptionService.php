@@ -27,7 +27,7 @@ class DailyConsumptionService
         $response = $this->apiClient->request($request);
 
         $consumption = $this->dailyConsumptionRepository->findOneByAccountAndDate($account, $date);
-        if (!$consumption) {
+        if ($consumption === null) {
             $consumption = new DailyConsumption();
             $consumption->setAccount($account);
             $consumption->setDate($date);
@@ -65,7 +65,7 @@ class DailyConsumptionService
                 'date' => $date
             ]);
             
-            if (!$consumption) {
+            if ($consumption === null) {
                 $consumption = new DailyConsumption();
                 $consumption->setAccount($account);
                 $consumption->setDate($date);

@@ -26,7 +26,7 @@ class GetTemplateRequest implements RequestInterface
             'apikey' => $this->apiKey
         ];
         
-        if ($this->tplId) {
+        if ($this->tplId !== null) {
             $params['tpl_id'] = $this->tplId;
         }
         

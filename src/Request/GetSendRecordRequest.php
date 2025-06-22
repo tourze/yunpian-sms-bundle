@@ -31,15 +31,15 @@ class GetSendRecordRequest implements RequestInterface
             'end_time' => $this->endTime->format('Y-m-d H:i:s')
         ];
         
-        if ($this->mobile) {
+        if ($this->mobile !== null) {
             $params['mobile'] = $this->mobile;
         }
         
-        if ($this->pageNum) {
+        if ($this->pageNum !== null) {
             $params['page_num'] = $this->pageNum;
         }
         
-        if ($this->pageSize) {
+        if ($this->pageSize !== null) {
             $params['page_size'] = $this->pageSize;
         }
         

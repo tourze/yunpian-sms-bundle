@@ -27,11 +27,11 @@ class GetSignRequest implements RequestInterface
             'apikey' => $this->apiKey
         ];
         
-        if ($this->signId) {
+        if ($this->signId !== null) {
             $params['sign_id'] = (string)$this->signId;
         }
         
-        if ($this->sign) {
+        if ($this->sign !== null) {
             $params['sign'] = $this->sign;
         }
         

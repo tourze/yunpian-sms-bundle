@@ -182,13 +182,7 @@ class SignServiceTest extends TestCase
             }));
             
         $this->entityManager->expects($this->once())
-            ->method('flush')
-            ->willReturnCallback(function() use (&$result) {
-                // 模拟flush时数据库会设置ID
-                if ($result instanceof Sign) {
-                    $result->setSignId(2001);
-                }
-            });
+            ->method('flush');
         
         // 执行测试
         $result = $this->signService->create($account, $signContent, $remark);

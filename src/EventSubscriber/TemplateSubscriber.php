@@ -24,11 +24,13 @@ class TemplateSubscriber
 
     public function preUpdate(Template $template): void
     {
-        $this->templateService->updateTemplate($template);
+        // Note: The update method in TemplateService expects two parameters
+        // We'll use the existing content since we're in preUpdate
+        $this->templateService->update($template, $template->getContent());
     }
 
     public function preRemove(Template $template): void
     {
-        $this->templateService->deleteTemplate($template);
+        $this->templateService->delete($template);
     }
 }
