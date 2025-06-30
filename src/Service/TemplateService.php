@@ -8,6 +8,7 @@ use YunpianSmsBundle\Entity\Account;
 use YunpianSmsBundle\Entity\Template;
 use YunpianSmsBundle\Enum\NotifyTypeEnum;
 use YunpianSmsBundle\Enum\TemplateTypeEnum;
+use YunpianSmsBundle\Exception\InvalidTemplateException;
 use YunpianSmsBundle\Repository\TemplateRepository;
 use YunpianSmsBundle\Request\Template\AddTemplateRequest;
 use YunpianSmsBundle\Request\Template\DeleteTemplateRequest;
@@ -35,7 +36,7 @@ class TemplateService
             // 获取远程模板列表
             $request = new GetTemplateRequest();
             $request->setAccount($account);
-            $response = $this->apiClient->request($request);
+            $response = $this->apiClient->requestArray($request);
             
             $result = [];
     
@@ -76,7 +77,7 @@ class TemplateService
     public function createTemplate(Template $template): void
     {
         if ($template->getTemplateType()->isVerification() && (empty($template->getWebsite()) || empty($template->getApplyDescription()))) {
-            throw new \InvalidArgumentException('验证码类模板必须提供网站地址和说明');
+            throw new InvalidTemplateException('验证码类模板必须提供网站地址和说明');
         }
 
         $request = new AddTemplateRequest();
@@ -88,7 +89,7 @@ class TemplateService
         $request->setCallback($template->getCallback());
         $request->setApplyDescription($template->getApplyDescription());
 
-        $response = $this->apiClient->request($request);
+        $response = $this->apiClient->requestArray($request);
         $template->setTplId($response['tpl_id']);
 
         $this->entityManager->persist($template);
@@ -106,7 +107,7 @@ class TemplateService
             $request->setContent($tplContent);
             $request->setNotifyType($notify ? NotifyTypeEnum::ALWAYS : NotifyTypeEnum::ONLY_FAILED);
             
-            $response = $this->apiClient->request($request);
+            $response = $this->apiClient->requestArray($request);
             
             $template = new Template();
             $template->setAccount($account);
@@ -140,7 +141,7 @@ class TemplateService
             $request->setTplId($template->getTplId());
             $request->setContent($newContent);
             
-            $this->apiClient->request($request);
+            $this->apiClient->requestArray($request);
             
             $template->setContent($newContent);
             $this->entityManager->flush();
@@ -165,7 +166,7 @@ class TemplateService
             $request->setAccount($template->getAccount());
             $request->setTemplateId($template->getTplId());
     
-            $this->apiClient->request($request);
+            $this->apiClient->requestArray($request);
             $this->entityManager->remove($template);
             $this->entityManager->flush();
             

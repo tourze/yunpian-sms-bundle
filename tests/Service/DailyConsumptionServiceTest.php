@@ -64,7 +64,7 @@ class DailyConsumptionServiceTest extends TestCase
 
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->dailyConsumptionRepository->expects($this->once())
@@ -129,7 +129,7 @@ class DailyConsumptionServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->dailyConsumptionRepository->expects($this->once())
@@ -169,7 +169,7 @@ class DailyConsumptionServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->dailyConsumptionRepository->expects($this->never())
@@ -196,7 +196,7 @@ class DailyConsumptionServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willThrowException(new \Exception('API错误'));
             
         $this->logger->expects($this->once())

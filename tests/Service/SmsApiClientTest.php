@@ -54,7 +54,7 @@ class SmsApiClientTest extends TestCase
             ->willReturn($mockResponse);
         
         // 执行测试
-        $result = $this->client->request($mockRequest);
+        $result = $this->client->requestArray($mockRequest);
         
         // 断言结果
         $this->assertSame($expectedData, $result);
@@ -88,7 +88,7 @@ class SmsApiClientTest extends TestCase
             ->willReturn($mockResponse);
         
         // 执行测试
-        $result = $this->client->request($mockRequest);
+        $result = $this->client->requestArray($mockRequest);
         
         // 断言结果
         $this->assertSame($errorData, $result);
@@ -113,6 +113,6 @@ class SmsApiClientTest extends TestCase
         $this->expectException(\JsonException::class);
         
         // 执行测试
-        $this->client->request($mockRequest);
+        $this->client->requestArray($mockRequest);
     }
 } 

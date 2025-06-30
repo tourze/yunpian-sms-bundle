@@ -33,7 +33,7 @@ class SignService
             // 获取远程签名列表
             $request = new GetSignRequest();
             $request->setAccount($account);
-            $response = $this->apiClient->request($request);
+            $response = $this->apiClient->requestArray($request);
             
             $result = [];
             
@@ -89,7 +89,7 @@ class SignService
         $request->setIdCardBack($sign->getIdCardBack());
         $request->setSignUse($sign->getSignUse());
 
-        $response = $this->apiClient->request($request);
+        $response = $this->apiClient->requestArray($request);
         $sign->setApplyState($response['apply_state']);
 
         $this->entityManager->persist($sign);
@@ -106,7 +106,7 @@ class SignService
             $request->setAccount($account);
             $request->setSign($signContent);
             
-            $response = $this->apiClient->request($request);
+            $response = $this->apiClient->requestArray($request);
             
             $sign = new Sign();
             $sign->setAccount($account);
@@ -144,7 +144,7 @@ class SignService
             $request->setAccount($sign->getAccount());
             $request->setSign($newSignContent);
             
-            $this->apiClient->request($request);
+            $this->apiClient->requestArray($request);
             
             $sign->setSign($newSignContent);
             $this->entityManager->flush();
@@ -169,7 +169,7 @@ class SignService
             $request->setAccount($sign->getAccount());
             $request->setSign($sign->getSign());
     
-            $this->apiClient->request($request);
+            $this->apiClient->requestArray($request);
             $this->entityManager->remove($sign);
             $this->entityManager->flush();
             
@@ -202,7 +202,7 @@ class SignService
         $request->setAccount($sign->getAccount());
         $request->setSign($sign->getSign());
         
-        $response = $this->apiClient->request($request);
+        $response = $this->apiClient->requestArray($request);
         $sign->setApplyState($response['apply_state'] ?? 'PENDING');
         
         $this->entityManager->flush();
@@ -214,7 +214,7 @@ class SignService
         $request->setAccount($sign->getAccount());
         $request->setSign($sign->getSign());
         
-        $this->apiClient->request($request);
+        $this->apiClient->requestArray($request);
         $this->entityManager->remove($sign);
         $this->entityManager->flush();
     }

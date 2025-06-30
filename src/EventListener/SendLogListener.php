@@ -8,6 +8,7 @@ use Doctrine\ORM\Events;
 use Psr\Log\LoggerInterface;
 use YunpianSmsBundle\Entity\SendLog;
 use YunpianSmsBundle\Enum\SendStatusEnum;
+use YunpianSmsBundle\Exception\TemplateParseException;
 use YunpianSmsBundle\Service\SendLogService;
 
 #[AsEntityListener(event: Events::prePersist, method: 'prePersist', entity: SendLog::class)]
@@ -73,7 +74,7 @@ class SendLogListener
     {
         $matches = [];
         if (!preg_match_all('/\{(\w+)\}(.*?)(?=\{|$)/u', $content, $matches, PREG_SET_ORDER)) {
-            throw new \RuntimeException('无法从内容中解析模板变量');
+            throw new TemplateParseException('无法从内容中解析模板变量');
         }
 
         $result = [];
@@ -82,7 +83,7 @@ class SendLogListener
             // 获取占位符后面的实际值
             $value = trim($match[2]);
             if (empty($value)) {
-                throw new \RuntimeException(sprintf('模板变量 %s 没有对应的值', $key));
+                throw new TemplateParseException(sprintf('模板变量 %s 没有对应的值', $key));
             }
             $result[$key] = $value;
         }

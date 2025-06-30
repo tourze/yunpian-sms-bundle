@@ -31,7 +31,7 @@ class SendLogService
         $request->setContent($content);
         $request->setUid($uid);
 
-        $response = $this->apiClient->request($request);
+        $response = $this->apiClient->requestArray($request);
 
         $sendLog = new SendLog();
         $sendLog->setAccount($account);
@@ -54,7 +54,7 @@ class SendLogService
         $request->setTplValue($tplValue);
         $request->setUid($uid);
 
-        $response = $this->apiClient->request($request);
+        $response = $this->apiClient->requestArray($request);
 
         $sendLog = new SendLog();
         $sendLog->setAccount($account);
@@ -112,7 +112,7 @@ class SendLogService
                 $request->setAccount($account);
                 $request->setSids($sids);
 
-                $response = $this->apiClient->request($request);
+                $response = $this->apiClient->requestArray($request);
                 
                 // 用 Map 优化查找
                 $sendLogMap = [];
@@ -163,7 +163,7 @@ class SendLogService
                 $request->setPageNum((string)$pageNum);
                 $request->setPageSize((string)$pageSize);
 
-                $response = $this->apiClient->request($request);
+                $response = $this->apiClient->requestArray($request);
                 if (empty($response)) {
                     break;
                 }

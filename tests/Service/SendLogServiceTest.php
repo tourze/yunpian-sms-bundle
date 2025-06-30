@@ -59,7 +59,7 @@ class SendLogServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($apiResponse) {
                 $this->assertInstanceOf(SendSmsRequest::class, $request);
                 return $apiResponse;
@@ -99,7 +99,7 @@ class SendLogServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($apiResponse, $template) {
                 $this->assertInstanceOf(SendTplSmsRequest::class, $request);
                 $this->assertEquals($template->getTplId(), $request->getTplId());
@@ -188,7 +188,7 @@ class SendLogServiceTest extends TestCase
             ->willReturn($pendingLogs);
             
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($statusResponse) {
                 $this->assertInstanceOf(GetSendStatusRequest::class, $request);
                 $this->assertEquals([1001, 1002], $request->getSids());
@@ -219,7 +219,7 @@ class SendLogServiceTest extends TestCase
             ->willReturn([]);
             
         $this->apiClient->expects($this->never())
-            ->method('request');
+            ->method('requestArray');
             
         $this->entityManager->expects($this->never())
             ->method('flush');
@@ -241,7 +241,7 @@ class SendLogServiceTest extends TestCase
             ->willReturn($pendingLogs);
             
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willThrowException(new \Exception('API错误'));
             
         $this->logger->expects($this->once())
@@ -289,7 +289,7 @@ class SendLogServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($recordResponse, $startTime, $endTime, $mobile) {
                 $this->assertInstanceOf(GetSendRecordRequest::class, $request);
                 $this->assertEquals($startTime, $request->getStartTime());
@@ -321,7 +321,7 @@ class SendLogServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willThrowException(new \Exception('API错误'));
             
         $this->logger->expects($this->once())

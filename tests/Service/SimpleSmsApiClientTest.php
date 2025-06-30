@@ -32,7 +32,7 @@ class SimpleSmsApiClientTest extends TestCase
         $client = new SmsApiClient($httpClient);
         
         // 执行测试
-        $result = $client->request($request);
+        $result = $client->requestArray($request);
         
         // 验证结果
         $this->assertEquals(['code' => 0, 'msg' => 'success'], $result);

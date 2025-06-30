@@ -52,7 +52,7 @@ class SignServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->signRepository->expects($this->once())
@@ -106,7 +106,7 @@ class SignServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->signRepository->expects($this->once())
@@ -138,7 +138,7 @@ class SignServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willThrowException(new \Exception('API错误'));
             
         $this->logger->expects($this->once())
@@ -166,7 +166,7 @@ class SignServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->entityManager->expects($this->once())
@@ -210,7 +210,7 @@ class SignServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->entityManager->expects($this->once())
@@ -238,7 +238,7 @@ class SignServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->entityManager->expects($this->once())
@@ -265,7 +265,7 @@ class SignServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willThrowException(new \Exception('API错误'));
             
         $this->logger->expects($this->once())

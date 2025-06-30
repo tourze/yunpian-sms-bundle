@@ -94,7 +94,7 @@ class SimpleDailyConsumptionServiceTest extends TestCase
         
         // 设置Mock行为
         $apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $repository->expects($this->once())

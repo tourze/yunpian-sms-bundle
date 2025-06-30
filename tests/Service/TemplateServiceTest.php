@@ -63,7 +63,7 @@ class TemplateServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($apiResponse) {
                 $this->assertInstanceOf(GetTemplateRequest::class, $request);
                 return $apiResponse;
@@ -114,7 +114,7 @@ class TemplateServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturn($apiResponse);
             
         $this->templateRepository->expects($this->once())
@@ -144,7 +144,7 @@ class TemplateServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willThrowException(new \Exception('API错误'));
             
         $this->logger->expects($this->once())
@@ -172,7 +172,7 @@ class TemplateServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($apiResponse, $tplContent) {
                 $this->assertInstanceOf(AddTemplateRequest::class, $request);
                 $this->assertEquals($tplContent, $request->getContent());
@@ -219,7 +219,7 @@ class TemplateServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($apiResponse, $newContent) {
                 $this->assertInstanceOf(UpdateTemplateRequest::class, $request);
                 $this->assertEquals('tpl001', $request->getTplId());
@@ -252,7 +252,7 @@ class TemplateServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willReturnCallback(function ($request) use ($apiResponse) {
                 $this->assertInstanceOf(DeleteTemplateRequest::class, $request);
                 $this->assertEquals('tpl001', $request->getTemplateId());
@@ -283,7 +283,7 @@ class TemplateServiceTest extends TestCase
         
         // 设置模拟对象预期行为
         $this->apiClient->expects($this->once())
-            ->method('request')
+            ->method('requestArray')
             ->willThrowException(new \Exception('API错误'));
             
         $this->logger->expects($this->once())
