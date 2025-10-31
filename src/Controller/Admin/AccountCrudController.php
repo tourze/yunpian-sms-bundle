@@ -17,8 +17,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use YunpianSmsBundle\Entity\Account;
 
+/**
+ * @extends AbstractCrudController<Account>
+ */
 #[AdminCrud(routePath: '/yunpian/account', routeName: 'yunpian_account')]
-class AccountCrudController extends AbstractCrudController
+final class AccountCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -36,7 +39,8 @@ class AccountCrudController extends AbstractCrudController
             ->setPageTitle('detail', '云片账号详情')
             ->setHelp('index', '管理云片短信服务的API账号配置')
             ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['apiKey', 'remark']);
+            ->setSearchFields(['apiKey', 'remark'])
+        ;
     }
 
     public function configureFields(string $pageName): iterable
@@ -44,16 +48,20 @@ class AccountCrudController extends AbstractCrudController
         yield IdField::new('id', 'ID')->setMaxLength(9999)->hideOnForm();
         yield BooleanField::new('valid', '是否有效');
         yield TextField::new('apiKey', 'API密钥')
-            ->setHelp('云片短信服务的API密钥');
+            ->setHelp('云片短信服务的API密钥')
+        ;
         yield TextareaField::new('remark', '备注')
             ->setNumOfRows(3)
-            ->hideOnIndex();
-        yield DateTimeField::new('createdAt', '创建时间')
+            ->hideOnIndex()
+        ;
+        yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
-        yield DateTimeField::new('updatedAt', '更新时间')
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
+        yield DateTimeField::new('updateTime', '更新时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -61,13 +69,17 @@ class AccountCrudController extends AbstractCrudController
         return $filters
             ->add(BooleanFilter::new('valid', '是否有效'))
             ->add(TextFilter::new('apiKey', 'API密钥'))
-            ->add(TextFilter::new('remark', '备注'));
+            ->add(TextFilter::new('remark', '备注'))
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE]);
+            ->setPermission(Action::DETAIL, 'ROLE_ADMIN')
+            ->setPermission(Action::EDIT, 'ROLE_ADMIN')
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+        ;
     }
 }

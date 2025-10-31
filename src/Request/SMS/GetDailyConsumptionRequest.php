@@ -11,6 +11,7 @@ use YunpianSmsBundle\Request\RequestInterface;
 class GetDailyConsumptionRequest implements RequestInterface
 {
     private string $apiKey;
+
     private \DateTimeInterface $date;
 
     public function getRequestMethod(): ?string
@@ -20,15 +21,23 @@ class GetDailyConsumptionRequest implements RequestInterface
 
     public function getRequestPath(): string
     {
-        return '/v2/sms/get_total_fee.json';
+        return 'https://sms.yunpian.com/v2/sms/get_total_fee.json';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
+        $params = [
+            'apikey' => $this->apiKey,
+            'date' => $this->date->format('Y-m-d'),
+        ];
+
         return [
-            'form_params' => [
-                'apikey' => $this->apiKey,
-                'date' => $this->date->format('Y-m-d'),
+            'body' => http_build_query($params),
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ],
         ];
     }

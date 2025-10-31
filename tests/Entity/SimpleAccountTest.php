@@ -2,31 +2,35 @@
 
 namespace YunpianSmsBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use YunpianSmsBundle\Entity\Account;
 
-class SimpleAccountTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(Account::class)]
+final class SimpleAccountTest extends AbstractEntityTestCase
 {
-    public function testGetId(): void
+    protected function createEntity(): object
     {
-        $account = new Account();
-        $this->assertEquals(0, $account->getId());
+        return new Account();
     }
 
-    public function testIsValid(): void
+    public function testEntity(): void
     {
-        $account = new Account();
-        $this->assertFalse($account->isValid());
-        
-        $account->setValid(true);
-        $this->assertTrue($account->isValid());
+        $entity = new Account();
+        $this->assertInstanceOf(Account::class, $entity);
     }
-    
-    public function testApiKey(): void
+
+    /**
+     * @return iterable<array{string, mixed}>
+     */
+    public static function propertiesProvider(): iterable
     {
-        $account = new Account();
-        $apiKey = 'test-api-key';
-        $account->setApiKey($apiKey);
-        $this->assertEquals($apiKey, $account->getApiKey());
+        return [
+            'apiKey' => ['apiKey', 'test-api-key'],
+            'valid' => ['valid', true],
+        ];
     }
-} 
+}

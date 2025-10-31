@@ -23,8 +23,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use YunpianSmsBundle\Entity\Sign;
 
+/**
+ * @extends AbstractCrudController<Sign>
+ */
 #[AdminCrud(routePath: '/yunpian/sign', routeName: 'yunpian_sign')]
-class SignCrudController extends AbstractCrudController
+final class SignCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -42,78 +45,98 @@ class SignCrudController extends AbstractCrudController
             ->setPageTitle('detail', '短信签名详情')
             ->setHelp('index', '管理云片短信签名配置')
             ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['sign', 'applyState', 'remark']);
+            ->setSearchFields(['sign', 'applyState', 'remark'])
+        ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')->setMaxLength(9999)->hideOnForm();
         yield AssociationField::new('account', '账号')
-            ->setHelp('选择对应的云片账号');
+            ->setHelp('选择对应的云片账号')
+        ;
         yield IntegerField::new('signId', '签名ID')
             ->hideOnForm()
-            ->setHelp('云片平台返回的签名ID');
+            ->setHelp('云片平台返回的签名ID')
+        ;
         yield TextField::new('sign', '签名内容')
-            ->setHelp('短信签名内容，需要审核通过后才能使用');
+            ->setHelp('短信签名内容，需要审核通过后才能使用')
+        ;
         yield TextField::new('applyState', '审核状态')
             ->hideOnForm()
             ->formatValue(function ($value) {
-                return $this->formatApplyState($value);
-            });
+                return $this->formatApplyState(is_string($value) ? $value : null);
+            })
+        ;
         yield UrlField::new('website', '业务网址')
             ->hideOnIndex()
-            ->setHelp('与签名相关的业务网站地址');
+            ->setHelp('与签名相关的业务网站地址')
+        ;
         yield BooleanField::new('notify', '短信通知结果')
-            ->setHelp('是否通过短信通知审核结果');
+            ->setHelp('是否通过短信通知审核结果')
+        ;
         yield BooleanField::new('applyVip', '申请专用通道')
-            ->setHelp('是否申请专用短信通道');
+            ->setHelp('是否申请专用短信通道')
+        ;
         yield BooleanField::new('isOnlyGlobal', '仅发国际短信')
-            ->setHelp('是否仅用于发送国际短信');
+            ->setHelp('是否仅用于发送国际短信')
+        ;
         yield TextField::new('industryType', '所属行业')
-            ->setHelp('签名所属的行业类型');
+            ->setHelp('签名所属的行业类型')
+        ;
         yield IntegerField::new('proveType', '证明文件类型')
             ->hideOnIndex()
-            ->setHelp('上传的证明文件类型');
+            ->setHelp('上传的证明文件类型')
+        ;
         yield TextareaField::new('licenseUrls', '证明文件URL')
             ->setNumOfRows(2)
             ->hideOnIndex()
             ->formatValue(function ($value) {
                 return is_array($value) ? implode("\n", $value) : '';
             })
-            ->setHelp('证明文件的存储URL列表');
+            ->setHelp('证明文件的存储URL列表')
+        ;
         yield TextField::new('idCardName', '企业责任人姓名')
-            ->hideOnIndex();
+            ->hideOnIndex()
+        ;
         yield TextField::new('idCardNumber', '身份证号')
             ->hideOnIndex()
             ->formatValue(function ($value) {
-                return $this->maskIdCard($value);
-            });
+                return $this->maskIdCard(is_string($value) ? $value : null);
+            })
+        ;
         yield TextareaField::new('idCardFront', '身份证正面')
             ->setNumOfRows(2)
             ->hideOnIndex()
-            ->setHelp('身份证正面照片URL');
+            ->setHelp('身份证正面照片URL')
+        ;
         yield TextareaField::new('idCardBack', '身份证反面')
             ->setNumOfRows(2)
             ->hideOnIndex()
-            ->setHelp('身份证反面照片URL');
+            ->setHelp('身份证反面照片URL')
+        ;
         yield ChoiceField::new('signUse', '签名用途')
             ->setChoices([
                 '自用' => 0,
                 '他用' => 1,
             ])
             ->formatValue(function ($value) {
-                return $value === 0 ? '自用' : '他用';
-            });
+                return 0 === $value ? '自用' : '他用';
+            })
+        ;
         yield BooleanField::new('valid', '是否有效');
         yield TextareaField::new('remark', '备注')
             ->setNumOfRows(3)
-            ->hideOnIndex();
-        yield DateTimeField::new('createdAt', '创建时间')
+            ->hideOnIndex()
+        ;
+        yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
-        yield DateTimeField::new('updatedAt', '更新时间')
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
+        yield DateTimeField::new('updateTime', '更新时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
     }
 
     /**
@@ -121,7 +144,7 @@ class SignCrudController extends AbstractCrudController
      */
     private function formatApplyState(?string $state): string
     {
-        if ($state === null) {
+        if (null === $state) {
             return '';
         }
 
@@ -139,7 +162,7 @@ class SignCrudController extends AbstractCrudController
      */
     private function maskIdCard(?string $idCard): string
     {
-        if ($idCard === null || strlen($idCard) < 8) {
+        if (null === $idCard || strlen($idCard) < 8) {
             return $idCard ?? '';
         }
 
@@ -159,13 +182,17 @@ class SignCrudController extends AbstractCrudController
             ->add(ChoiceFilter::new('signUse', '签名用途')->setChoices([
                 '自用' => 0,
                 '他用' => 1,
-            ]));
+            ]))
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE]);
+            ->setPermission(Action::DETAIL, 'ROLE_ADMIN')
+            ->setPermission(Action::EDIT, 'ROLE_ADMIN')
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+        ;
     }
 }

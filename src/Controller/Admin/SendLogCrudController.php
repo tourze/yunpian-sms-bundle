@@ -24,8 +24,11 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use YunpianSmsBundle\Entity\SendLog;
 use YunpianSmsBundle\Enum\SendStatusEnum;
 
+/**
+ * @extends AbstractCrudController<SendLog>
+ */
 #[AdminCrud(routePath: '/yunpian/send-log', routeName: 'yunpian_send_log')]
-class SendLogCrudController extends AbstractCrudController
+final class SendLogCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -43,35 +46,44 @@ class SendLogCrudController extends AbstractCrudController
             ->setPageTitle('detail', '发送记录详情')
             ->setHelp('index', '查看和管理短信发送记录')
             ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['mobile', 'content', 'sid', 'uid']);
+            ->setSearchFields(['mobile', 'content', 'sid', 'uid'])
+        ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')->setMaxLength(9999)->hideOnForm();
         yield AssociationField::new('account', '账号')
-            ->setHelp('发送短信使用的云片账号');
+            ->setHelp('发送短信使用的云片账号')
+        ;
         yield AssociationField::new('template', '模板')
-            ->setHelp('使用的短信模板（如果有）');
+            ->setHelp('使用的短信模板（如果有）')
+        ;
         yield TextField::new('mobile', '手机号')
-            ->setHelp('接收短信的手机号码');
+            ->setHelp('接收短信的手机号码')
+        ;
         yield TextareaField::new('content', '短信内容')
             ->setNumOfRows(3)
             ->formatValue(function ($value) {
-                return $this->truncateContent($value);
-            });
+                return $this->truncateContent(is_string($value) ? $value : null);
+            })
+        ;
         yield TextField::new('uid', '业务ID')
             ->hideOnIndex()
-            ->setHelp('业务系统的唯一标识');
+            ->setHelp('业务系统的唯一标识')
+        ;
         yield TextField::new('sid', '云片短信ID')
             ->hideOnIndex()
-            ->setHelp('云片平台返回的短信ID');
+            ->setHelp('云片平台返回的短信ID')
+        ;
         yield IntegerField::new('count', '计费条数')
-            ->setHelp('短信计费条数');
+            ->setHelp('短信计费条数')
+        ;
         yield MoneyField::new('fee', '费用')
             ->setCurrency('CNY')
             ->setStoredAsCents(false)
-            ->setHelp('短信发送费用（元）');
+            ->setHelp('短信发送费用（元）')
+        ;
         yield ChoiceField::new('status', '发送状态')
             ->setFormType(EnumType::class)
             ->setFormTypeOptions(['class' => SendStatusEnum::class])
@@ -79,24 +91,31 @@ class SendLogCrudController extends AbstractCrudController
                 if ($value instanceof SendStatusEnum) {
                     return $this->formatStatus($value);
                 }
+
                 return '';
-            });
+            })
+        ;
         yield TextField::new('statusMsg', '状态说明')
             ->hideOnIndex()
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
         yield DateTimeField::new('receiveTime', '用户接收时间')
             ->hideOnIndex()
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
         yield TextField::new('errorMsg', '错误信息')
             ->hideOnIndex()
-            ->hideOnForm();
-        yield DateTimeField::new('createdAt', '创建时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
-        yield DateTimeField::new('updatedAt', '更新时间')
+        ;
+        yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
+        yield DateTimeField::new('updateTime', '更新时间')
+            ->hideOnForm()
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
     }
 
     /**
@@ -104,7 +123,7 @@ class SendLogCrudController extends AbstractCrudController
      */
     private function truncateContent(?string $content): string
     {
-        if ($content === null) {
+        if (null === $content) {
             return '';
         }
 
@@ -140,15 +159,19 @@ class SendLogCrudController extends AbstractCrudController
             ->add(EntityFilter::new('template', '模板'))
             ->add(TextFilter::new('mobile', '手机号'))
             ->add(ChoiceFilter::new('status', '发送状态')->setChoices($statusChoices))
-            ->add(DateTimeFilter::new('createdAt', '创建时间'))
+            ->add(DateTimeFilter::new('createTime', '创建时间'))
             ->add(TextFilter::new('sid', '云片短信ID'))
-            ->add(TextFilter::new('uid', '业务ID'));
+            ->add(TextFilter::new('uid', '业务ID'))
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE]);
+            ->disable(Action::NEW, Action::EDIT)
+            ->setPermission(Action::DETAIL, 'ROLE_ADMIN')
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+        ;
     }
 }

@@ -2,16 +2,21 @@
 
 namespace YunpianSmsBundle\Tests\Request;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use YunpianSmsBundle\Entity\Account;
 use YunpianSmsBundle\Request\SendSmsRequest;
 
-class SimpleSendSmsRequestTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(SendSmsRequest::class)]
+final class SimpleSendSmsRequestTest extends TestCase
 {
     public function testGetRequestPath(): void
     {
         $request = new SendSmsRequest();
-        $this->assertEquals('/v2/sms/single_send.json', $request->getRequestPath());
+        $this->assertEquals('https://sms.yunpian.com/v2/sms/single_send.json', $request->getRequestPath());
     }
 
     public function testGetRequestMethod(): void
@@ -19,25 +24,30 @@ class SimpleSendSmsRequestTest extends TestCase
         $request = new SendSmsRequest();
         $this->assertEquals('POST', $request->getRequestMethod());
     }
-    
+
     public function testGetRequestOptions(): void
     {
         $request = new SendSmsRequest();
-        
+
         $account = new Account();
         $account->setApiKey('test-api-key');
         $request->setAccount($account);
-        
+
         $mobile = '13800138000';
         $request->setMobile($mobile);
-        
+
         $content = '测试短信内容';
         $request->setContent($content);
-        
+
         $options = $request->getRequestOptions();
-        $this->assertArrayHasKey('form_params', $options);
-        $this->assertEquals('test-api-key', $options['form_params']['apikey']);
-        $this->assertEquals($mobile, $options['form_params']['mobile']);
-        $this->assertEquals($content, $options['form_params']['text']);
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('body', $options);
+
+        $body = $options['body'];
+        $this->assertIsString($body);
+
+        $this->assertStringContainsString('apikey=test-api-key', $body);
+        $this->assertStringContainsString('mobile=13800138000', $body);
+        $this->assertStringContainsString('text=', $body);
     }
-} 
+}

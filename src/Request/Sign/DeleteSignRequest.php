@@ -8,7 +8,9 @@ use YunpianSmsBundle\Request\AbstractRequest;
 class DeleteSignRequest extends AbstractRequest
 {
     private Account $account;
+
     private string $sign;
+
     private ?int $signId = null;
 
     public function getMethod(): string
@@ -34,39 +36,36 @@ class DeleteSignRequest extends AbstractRequest
         $body = [
             'apikey' => $this->account->getApiKey(),
         ];
-        
-        if ($this->signId !== null) {
+
+        if (null !== $this->signId) {
             $body['sign_id'] = $this->signId;
         } else {
             $body['sign'] = $this->sign;
         }
-        
+
         return $body;
     }
 
-    public function setAccount(Account $account): self
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
-        return $this;
     }
 
-    public function setSign(string $sign): self
+    public function setSign(string $sign): void
     {
         $this->sign = $sign;
-        return $this;
     }
-    
+
     public function getSign(): string
     {
         return $this->sign;
     }
-    
-    public function setSignId(int $signId): self
+
+    public function setSignId(int $signId): void
     {
         $this->signId = $signId;
-        return $this;
     }
-    
+
     public function getSignId(): ?int
     {
         return $this->signId;

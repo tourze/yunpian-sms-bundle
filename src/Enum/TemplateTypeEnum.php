@@ -18,12 +18,15 @@ enum TemplateTypeEnum: int implements Labelable, Itemable, Selectable
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::NOTIFICATION => '通知类模板',
             self::VERIFICATION => '验证码类模板',
         };
     }
 
+    /**
+     * @return array<string, self>
+     */
     public static function getChoices(): array
     {
         return [
@@ -34,11 +37,11 @@ enum TemplateTypeEnum: int implements Labelable, Itemable, Selectable
 
     public function isVerification(): bool
     {
-        return $this === self::VERIFICATION;
+        return self::VERIFICATION === $this;
     }
 
     public function isNotification(): bool
     {
-        return $this === self::NOTIFICATION;
+        return self::NOTIFICATION === $this;
     }
 }

@@ -2,12 +2,21 @@
 
 namespace YunpianSmsBundle\Request;
 
+use YunpianSmsBundle\Entity\Account;
+
 class SendTplSmsRequest implements RequestInterface
 {
     private string $apiKey;
+
     private string $mobile;
+
     private string $tplId;
+
+    /**
+     * @var array<string, mixed>
+     */
     private array $tplValue = [];
+
     private ?string $uid = null;
 
     public function getRequestMethod(): ?string
@@ -17,9 +26,12 @@ class SendTplSmsRequest implements RequestInterface
 
     public function getRequestPath(): string
     {
-        return '/v2/sms/tpl_single_send.json';
+        return 'https://sms.yunpian.com/v2/sms/tpl_single_send.json';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         $params = [
@@ -29,16 +41,19 @@ class SendTplSmsRequest implements RequestInterface
             'tpl_value' => urlencode(http_build_query($this->tplValue)),
         ];
 
-        if ($this->uid !== null) {
+        if (null !== $this->uid) {
             $params['uid'] = $this->uid;
         }
 
         return [
-            'form_params' => $params,
+            'body' => http_build_query($params),
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
         ];
     }
 
-    public function setAccount(\YunpianSmsBundle\Entity\Account $account): void
+    public function setAccount(Account $account): void
     {
         $this->apiKey = $account->getApiKey();
     }
@@ -53,6 +68,9 @@ class SendTplSmsRequest implements RequestInterface
         $this->tplId = $tplId;
     }
 
+    /**
+     * @param array<string, mixed> $tplValue
+     */
     public function setTplValue(array $tplValue): void
     {
         $this->tplValue = $tplValue;

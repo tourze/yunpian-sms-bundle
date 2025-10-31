@@ -8,7 +8,9 @@ use YunpianSmsBundle\Request\RequestInterface;
 class GetSignRequest implements RequestInterface
 {
     private string $apiKey;
+
     private ?int $signId = null;
+
     private ?string $sign = null;
 
     public function getRequestMethod(): string
@@ -18,25 +20,31 @@ class GetSignRequest implements RequestInterface
 
     public function getRequestPath(): string
     {
-        return '/v2/sign/get.json';
+        return 'https://sms.yunpian.com/v2/sign/get.json';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getRequestOptions(): array
     {
         $params = [
-            'apikey' => $this->apiKey
+            'apikey' => $this->apiKey,
         ];
-        
-        if ($this->signId !== null) {
-            $params['sign_id'] = (string)$this->signId;
+
+        if (null !== $this->signId) {
+            $params['sign_id'] = (string) $this->signId;
         }
-        
-        if ($this->sign !== null) {
+
+        if (null !== $this->sign) {
             $params['sign'] = $this->sign;
         }
-        
+
         return [
-            'form_params' => $params
+            'body' => http_build_query($params),
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
         ];
     }
 
@@ -44,24 +52,24 @@ class GetSignRequest implements RequestInterface
     {
         $this->apiKey = $account->getApiKey();
     }
-    
+
     public function setSignId(?int $signId): void
     {
         $this->signId = $signId;
     }
-    
+
     public function getSignId(): ?int
     {
         return $this->signId;
     }
-    
+
     public function setSign(?string $sign): void
     {
         $this->sign = $sign;
     }
-    
+
     public function getSign(): ?string
     {
         return $this->sign;
     }
-} 
+}

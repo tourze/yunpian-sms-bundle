@@ -37,9 +37,8 @@ class GetSignListRequest extends AbstractRequest
         ];
     }
 
-    public function setAccount(Account $account): self
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
-        return $this;
     }
 }

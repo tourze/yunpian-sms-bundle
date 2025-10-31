@@ -16,6 +16,7 @@ use YunpianSmsBundle\Service\SignService;
 class SyncSignCommand extends Command
 {
     public const NAME = 'yunpian:sync-sign';
+
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly SignService $signService,
@@ -35,6 +36,7 @@ class SyncSignCommand extends Command
                 $output->writeln('同步成功');
             } catch (\Throwable $e) {
                 $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
+
                 return Command::FAILURE;
             }
         }

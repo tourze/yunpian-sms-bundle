@@ -1,0 +1,8 @@
+services:
+  _defaults:
+    autoconfigure: true
+    autowire: true
+
+  YunpianSmsBundle\DataFixtures\:
+    resource: '../../DataFixtures/*'
+    tags: ['doctrine.fixture.orm']

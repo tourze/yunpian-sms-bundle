@@ -7,6 +7,10 @@ use YunpianSmsBundle\Entity\Account;
 class GetSendStatusRequest implements RequestInterface
 {
     private string $apiKey;
+
+    /**
+     * @var array<string>
+     */
     private array $sids = [];
 
     public function getRequestMethod(): string
@@ -16,21 +20,27 @@ class GetSendStatusRequest implements RequestInterface
 
     public function getRequestPath(): string
     {
-        return '/v2/sms/pull_status.json';
+        return 'https://sms.yunpian.com/v2/sms/pull_status.json';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getRequestOptions(): array
     {
         $params = [
-            'apikey' => $this->apiKey
+            'apikey' => $this->apiKey,
         ];
-        
-        if (!empty($this->sids)) {
+
+        if ([] !== $this->sids) {
             $params['sid'] = implode(',', $this->sids);
         }
-        
+
         return [
-            'form_params' => $params
+            'body' => http_build_query($params),
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
         ];
     }
 
@@ -38,12 +48,18 @@ class GetSendStatusRequest implements RequestInterface
     {
         $this->apiKey = $account->getApiKey();
     }
-    
+
+    /**
+     * @param array<string> $sids
+     */
     public function setSids(array $sids): void
     {
         $this->sids = $sids;
     }
-    
+
+    /**
+     * @return array<string>
+     */
     public function getSids(): array
     {
         return $this->sids;

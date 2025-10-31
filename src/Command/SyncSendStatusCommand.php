@@ -17,6 +17,7 @@ use YunpianSmsBundle\Service\SendLogService;
 class SyncSendStatusCommand extends Command
 {
     public const NAME = 'yunpian:sync-send-status';
+
     public function __construct(
         private readonly SendLogService $sendLogService,
     ) {
@@ -28,9 +29,11 @@ class SyncSendStatusCommand extends Command
         try {
             $this->sendLogService->syncStatus();
             $output->writeln('同步成功');
+
             return Command::SUCCESS;
         } catch (\Throwable $e) {
             $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
+
             return Command::FAILURE;
         }
     }

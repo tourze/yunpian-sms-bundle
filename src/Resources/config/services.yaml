@@ -9,9 +9,15 @@ services:
     resource: '../../Command/'
   YunpianSmsBundle\Controller\:
     resource: '../../Controller/'
+  YunpianSmsBundle\EventListener\:
+    resource: '../../EventListener/'
   YunpianSmsBundle\EventSubscriber\:
     resource: '../../EventSubscriber/'
   YunpianSmsBundle\Repository\:
     resource: '../../Repository/'
   YunpianSmsBundle\Service\:
     resource: '../../Service/'
+  
+  # AdminMenu 服务需要公开以便测试
+  YunpianSmsBundle\Service\AdminMenu:
+    public: true

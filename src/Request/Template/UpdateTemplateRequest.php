@@ -19,6 +19,9 @@ class UpdateTemplateRequest implements RequestInterface
         return 'https://sms.yunpian.com/v2/tpl/update.json';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         $params = [
@@ -26,29 +29,28 @@ class UpdateTemplateRequest implements RequestInterface
             'tpl_id' => $this->getTplId(),
             'tpl_content' => $this->getContent(),
         ];
-        if ($this->getNotifyType() !== null) {
+        if (null !== $this->getNotifyType()) {
             $params['notify_type'] = $this->getNotifyType()->value;
         }
-        if ($this->getWebsite() !== null) {
+        if (null !== $this->getWebsite()) {
             $params['website'] = $this->getWebsite();
         }
-        if ($this->getTemplateType() !== null) {
+        if (null !== $this->getTemplateType()) {
             $params['tplType'] = $this->getTemplateType()->value;
             $params['tpl_type'] = $this->getTemplateType()->value;
         }
-        if ($this->getCallback() !== null) {
+        if (null !== $this->getCallback()) {
             $params['callback'] = $this->getCallback();
         }
-        if ($this->getApplyDescription() !== null) {
+        if (null !== $this->getApplyDescription()) {
             $params['apply_description'] = $this->getApplyDescription();
         }
 
         return [
+            'body' => http_build_query($params),
             'headers' => [
-                'content-type' => 'application/x-www-form-urlencode',
-                'Accept' => 'application/json;charset=utf-8',
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ],
-            'form' => $params,
         ];
     }
 
@@ -70,7 +72,7 @@ class UpdateTemplateRequest implements RequestInterface
     /**
      * @var NotifyTypeEnum|null 审核结果短信通知的方式
      */
-    private NotifyTypeEnum|null $notifyType = null;
+    private ?NotifyTypeEnum $notifyType = null;
 
     public function getNotifyType(): ?NotifyTypeEnum
     {
@@ -85,14 +87,14 @@ class UpdateTemplateRequest implements RequestInterface
     /**
      * @var string|null 验证码类模板对应的官网注册页面，验证码类模板必填
      */
-    private string|null $website;
+    private ?string $website = null;
 
-    public function getWebsite(): string|null
+    public function getWebsite(): ?string
     {
         return $this->website;
     }
 
-    public function setWebsite(string|null $website): void
+    public function setWebsite(?string $website): void
     {
         $this->website = $website;
     }
@@ -100,7 +102,7 @@ class UpdateTemplateRequest implements RequestInterface
     /**
      * @var TemplateTypeEnum|null 模板类型
      */
-    private TemplateTypeEnum|null $templateType = null;
+    private ?TemplateTypeEnum $templateType = null;
 
     public function getTemplateType(): ?TemplateTypeEnum
     {
@@ -115,7 +117,7 @@ class UpdateTemplateRequest implements RequestInterface
     /**
      * @var string|null 审核结果会向这个地址推送
      */
-    private string|null $callback = null;
+    private ?string $callback = null;
 
     public function getCallback(): ?string
     {
@@ -130,7 +132,7 @@ class UpdateTemplateRequest implements RequestInterface
     /**
      * @var string|null 说明模板的发送场景和对象，验证码类模板必填
      */
-    private string|null $applyDescription = null;
+    private ?string $applyDescription = null;
 
     public function getApplyDescription(): ?string
     {

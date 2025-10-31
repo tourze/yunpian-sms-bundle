@@ -11,19 +11,36 @@ use YunpianSmsBundle\Request\AbstractRequest;
 class UpdateSignRequest extends AbstractRequest
 {
     private Account $account;
+
     private string $oldSign;
+
     private string $sign;
+
     private ?int $signId = null;
+
     private bool $notify = true;
+
     private bool $applyVip = false;
+
     private bool $isOnlyGlobal = false;
+
     private string $industryType = '其它';
+
     private ?int $proveType = null;
+
+    /**
+     * @var array<string>|null
+     */
     private ?array $licenseUrls = null;
+
     private ?string $idCardName = null;
+
     private ?string $idCardNumber = null;
+
     private ?string $idCardFront = null;
+
     private ?string $idCardBack = null;
+
     private int $signUse = 0;
 
     public function getMethod(): string
@@ -55,137 +72,141 @@ class UpdateSignRequest extends AbstractRequest
             'industry_type' => $this->industryType,
             'sign_use' => $this->signUse,
         ];
-        
-        if ($this->signId !== null) {
-            $body['sign_id'] = $this->signId;
-        } else {
-            $body['old_sign'] = $this->oldSign;
-        }
 
-        if ($this->proveType !== null) {
-            $body['prove_type'] = $this->proveType;
-        }
-
-        if ($this->licenseUrls !== null) {
-            $body['license_urls'] = implode(',', $this->licenseUrls);
-        }
-
-        if ($this->idCardName !== null) {
-            $body['id_card_name'] = $this->idCardName;
-        }
-
-        if ($this->idCardNumber !== null) {
-            $body['id_card_number'] = $this->idCardNumber;
-        }
-
-        if ($this->idCardFront !== null) {
-            $body['id_card_front'] = $this->idCardFront;
-        }
-
-        if ($this->idCardBack !== null) {
-            $body['id_card_back'] = $this->idCardBack;
-        }
-
-        return $body;
+        return array_merge($body, $this->addSignIdentifier(), $this->addOptionalFields());
     }
 
-    public function setAccount(Account $account): self
+    /**
+     * @return array<string, mixed>
+     */
+    private function addSignIdentifier(): array
+    {
+        if (null !== $this->signId) {
+            return ['sign_id' => $this->signId];
+        }
+
+        return ['old_sign' => $this->oldSign];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function addOptionalFields(): array
+    {
+        $optionalFields = [];
+
+        if (null !== $this->proveType) {
+            $optionalFields['prove_type'] = $this->proveType;
+        }
+
+        if (null !== $this->licenseUrls) {
+            $optionalFields['license_urls'] = implode(',', $this->licenseUrls);
+        }
+
+        if (null !== $this->idCardName) {
+            $optionalFields['id_card_name'] = $this->idCardName;
+        }
+
+        if (null !== $this->idCardNumber) {
+            $optionalFields['id_card_number'] = $this->idCardNumber;
+        }
+
+        if (null !== $this->idCardFront) {
+            $optionalFields['id_card_front'] = $this->idCardFront;
+        }
+
+        if (null !== $this->idCardBack) {
+            $optionalFields['id_card_back'] = $this->idCardBack;
+        }
+
+        return $optionalFields;
+    }
+
+    public function setAccount(Account $account): void
     {
         $this->account = $account;
-        return $this;
     }
 
-    public function setOldSign(string $oldSign): self
+    public function setOldSign(string $oldSign): void
     {
         $this->oldSign = $oldSign;
-        return $this;
     }
 
-    public function setSign(string $sign): self
+    public function setSign(string $sign): void
     {
         $this->sign = $sign;
-        return $this;
     }
-    
+
     public function getSign(): string
     {
         return $this->sign;
     }
-    
-    public function setSignId(int $signId): self
+
+    public function setSignId(int $signId): void
     {
         $this->signId = $signId;
-        return $this;
     }
-    
+
     public function getSignId(): ?int
     {
         return $this->signId;
     }
 
-    public function setNotify(bool $notify): self
+    public function setNotify(bool $notify): void
     {
         $this->notify = $notify;
-        return $this;
     }
 
-    public function setApplyVip(bool $applyVip): self
+    public function setApplyVip(bool $applyVip): void
     {
         $this->applyVip = $applyVip;
-        return $this;
     }
 
-    public function setIsOnlyGlobal(bool $isOnlyGlobal): self
+    public function setIsOnlyGlobal(bool $isOnlyGlobal): void
     {
         $this->isOnlyGlobal = $isOnlyGlobal;
-        return $this;
     }
 
-    public function setIndustryType(string $industryType): self
+    public function setIndustryType(string $industryType): void
     {
         $this->industryType = $industryType;
-        return $this;
     }
 
-    public function setProveType(?int $proveType): self
+    public function setProveType(?int $proveType): void
     {
         $this->proveType = $proveType;
-        return $this;
     }
 
-    public function setLicenseUrls(?array $licenseUrls): self
+    /**
+     * @param array<string>|null $licenseUrls
+     */
+    public function setLicenseUrls(?array $licenseUrls): void
     {
         $this->licenseUrls = $licenseUrls;
-        return $this;
     }
 
-    public function setIdCardName(?string $idCardName): self
+    public function setIdCardName(?string $idCardName): void
     {
         $this->idCardName = $idCardName;
-        return $this;
     }
 
-    public function setIdCardNumber(?string $idCardNumber): self
+    public function setIdCardNumber(?string $idCardNumber): void
     {
         $this->idCardNumber = $idCardNumber;
-        return $this;
     }
 
-    public function setIdCardFront(?string $idCardFront): self
+    public function setIdCardFront(?string $idCardFront): void
     {
         $this->idCardFront = $idCardFront;
-        return $this;
     }
 
-    public function setIdCardBack(?string $idCardBack): self
+    public function setIdCardBack(?string $idCardBack): void
     {
         $this->idCardBack = $idCardBack;
-        return $this;
     }
 
-    public function setSignUse(int $signUse): self
+    public function setSignUse(int $signUse): void
     {
         $this->signUse = $signUse;
-        return $this;
     }
 }

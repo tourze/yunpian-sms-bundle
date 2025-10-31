@@ -3,6 +3,7 @@
 namespace YunpianSmsBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use YunpianSmsBundle\Entity\Account;
 use YunpianSmsBundle\Entity\Sign;
@@ -12,6 +13,7 @@ use YunpianSmsBundle\Request\Sign\DeleteSignRequest;
 use YunpianSmsBundle\Request\Sign\GetSignRequest;
 use YunpianSmsBundle\Request\Sign\UpdateSignRequest;
 
+#[WithMonologChannel(channel: 'yunpian_sms')]
 class SignService
 {
     public function __construct(
@@ -34,40 +36,55 @@ class SignService
             $request = new GetSignRequest();
             $request->setAccount($account);
             $response = $this->apiClient->requestArray($request);
-            
+
             $result = [];
-            
+
             foreach ($response as $signData) {
+                if (!is_array($signData)) {
+                    continue;
+                }
+
+                $signText = $signData['sign'] ?? null;
+                if (!is_string($signText)) {
+                    continue;
+                }
+
                 $sign = $this->signRepository->findOneBy([
                     'account' => $account,
-                    'sign' => $signData['sign'],
+                    'sign' => $signText,
                 ]);
-    
-                if ($sign === null) {
+
+                if (null === $sign) {
                     $sign = new Sign();
                     $sign->setAccount($account);
-                    $sign->setSign($signData['sign']);
+                    $sign->setSign($signText);
                     $this->entityManager->persist($sign);
                 }
-    
-                $sign->setApplyState($signData['apply_state']);
-                $sign->setValid($signData['enabled'] ?? false);
-                
+
+                $applyState = $signData['apply_state'] ?? null;
+                $enabled = $signData['enabled'] ?? false;
+                $website = $signData['website'] ?? null;
+
+                $sign->setApplyState(is_string($applyState) ? $applyState : '');
+                $sign->setValid(is_bool($enabled) ? $enabled : (bool) $enabled);
+
                 // 更新其他属性
-                if (isset($signData['website'])) {
-                    $sign->setWebsite($signData['website']);
+                if (is_string($website)) {
+                    $sign->setWebsite($website);
                 }
-                
+
                 $result[] = $sign;
             }
-    
+
             $this->entityManager->flush();
+
             return $result;
         } catch (\Throwable $e) {
             $this->logger->error('同步签名失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
             ]);
+
             return [];
         }
     }
@@ -90,10 +107,8 @@ class SignService
         $request->setSignUse($sign->getSignUse());
 
         $response = $this->apiClient->requestArray($request);
-        $sign->setApplyState($response['apply_state']);
-
-        $this->entityManager->persist($sign);
-        $this->entityManager->flush();
+        $applyState = $response['apply_state'] ?? 'PENDING';
+        $sign->setApplyState(is_string($applyState) ? $applyState : 'PENDING');
     }
 
     /**
@@ -105,25 +120,26 @@ class SignService
             $request = new AddSignRequest();
             $request->setAccount($account);
             $request->setSign($signContent);
-            
+
             $response = $this->apiClient->requestArray($request);
-            
+
             $sign = new Sign();
             $sign->setAccount($account);
             $sign->setSign($signContent);
             $sign->setApplyState('SUCCESS');
-            
-            if (isset($response['sign_id'])) {
-                $sign->setSignId($response['sign_id']);
+
+            $signId = $response['sign_id'] ?? null;
+            if (is_string($signId) || is_int($signId)) {
+                $sign->setSignId(is_int($signId) ? $signId : (int) $signId);
             }
-            
-            if ($remark !== null) {
+
+            if (null !== $remark) {
                 $sign->setRemark($remark);
             }
-            
+
             $this->entityManager->persist($sign);
             $this->entityManager->flush();
-            
+
             return $sign;
         } catch (\Throwable $e) {
             $this->logger->error('创建签名失败: {message}', [
@@ -143,12 +159,20 @@ class SignService
             $request = new UpdateSignRequest();
             $request->setAccount($sign->getAccount());
             $request->setSign($newSignContent);
-            
+
+            // 使用signId作为标识符（如果可用），否则使用当前签名内容作为oldSign
+            $signId = $sign->getSignId();
+            if (null !== $signId) {
+                $request->setSignId($signId);
+            } else {
+                $request->setOldSign($sign->getSign());
+            }
+
             $this->apiClient->requestArray($request);
-            
+
             $sign->setSign($newSignContent);
             $this->entityManager->flush();
-            
+
             return $sign;
         } catch (\Throwable $e) {
             $this->logger->error('更新签名失败: {message}', [
@@ -168,17 +192,28 @@ class SignService
             $request = new DeleteSignRequest();
             $request->setAccount($sign->getAccount());
             $request->setSign($sign->getSign());
-    
-            $this->apiClient->requestArray($request);
-            $this->entityManager->remove($sign);
-            $this->entityManager->flush();
-            
-            return true;
+
+            $response = $this->apiClient->requestArray($request);
+
+            // 检查API响应状态
+            $status = $response['status'] ?? null;
+            if (is_string($status) && 'SUCCESS' === $status) {
+                // 只有已持久化的实体才需要删除
+                if ($sign->getId() > 0) {
+                    $this->entityManager->remove($sign);
+                    $this->entityManager->flush();
+                }
+
+                return true;
+            }
+
+            return false;
         } catch (\Throwable $e) {
             $this->logger->error('删除签名失败: {message}', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
             ]);
+
             return false;
         }
     }
@@ -201,10 +236,19 @@ class SignService
         $request = new UpdateSignRequest();
         $request->setAccount($sign->getAccount());
         $request->setSign($sign->getSign());
-        
+
+        // 使用signId作为标识符（如果可用），否则使用当前签名内容作为oldSign
+        $signId = $sign->getSignId();
+        if (null !== $signId) {
+            $request->setSignId($signId);
+        } else {
+            $request->setOldSign($sign->getSign());
+        }
+
         $response = $this->apiClient->requestArray($request);
-        $sign->setApplyState($response['apply_state'] ?? 'PENDING');
-        
+        $applyState = $response['apply_state'] ?? 'PENDING';
+        $sign->setApplyState(is_string($applyState) ? $applyState : 'PENDING');
+
         $this->entityManager->flush();
     }
 
@@ -213,7 +257,7 @@ class SignService
         $request = new DeleteSignRequest();
         $request->setAccount($sign->getAccount());
         $request->setSign($sign->getSign());
-        
+
         $this->apiClient->requestArray($request);
         $this->entityManager->remove($sign);
         $this->entityManager->flush();

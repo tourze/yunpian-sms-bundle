@@ -35,48 +35,63 @@ class NotifierSmsTransport implements TransportInterface
             throw new RuntimeException('消息类型不支持，只支持 SmsMessage');
         }
 
-        // 获取账号
         $account = $this->getAccount();
-        if ($account === null) {
+        if (null === $account) {
             throw new RuntimeException('未找到可用的云片短信账号');
         }
 
         try {
-            // 创建发送请求
-            $request = new SendSmsRequest();
-            $request->setAccount($account);
-            $request->setMobile($message->getPhone());
-            $request->setContent($message->getSubject());
-
-            // 如果消息有选项，提取 uid
-            $options = $message->getOptions();
-            if ($options instanceof MessageOptionsInterface) {
-                $request->setUid($options->getRecipientId());
-            }
-
-            // 发送请求并获取HTTP响应
-            $httpResponse = $this->apiClient->request($request);
+            $request = $this->createSendRequest($message, $account);
             $response = $this->apiClient->requestArray($request);
 
-            // 检查响应
-            if (isset($response['code']) && $response['code'] !== 0) {
-                $errorMsg = is_string($response['msg'] ?? null) ? $response['msg'] : '未知错误';
-                throw new TransportException(sprintf('云片短信发送失败: %s', $errorMsg), $httpResponse);
-            }
+            $this->validateResponse($response);
 
-            // 构造 SentMessage
-            $sentMessage = new SentMessage($message, (string) $this);
-            if (isset($response['sid']) && (is_string($response['sid']) || is_int($response['sid']))) {
-                $sentMessage->setMessageId((string) $response['sid']);
-            }
-
-            return $sentMessage;
-
+            return $this->createSentMessage($message, $response);
         } catch (TransportException $e) {
             throw $e;
         } catch (\Throwable $e) {
             throw new RuntimeException(sprintf('发送短信时出现异常: %s', $e->getMessage()), 0, $e);
         }
+    }
+
+    private function createSendRequest(SmsMessage $message, Account $account): SendSmsRequest
+    {
+        $request = new SendSmsRequest();
+        $request->setAccount($account);
+        $request->setMobile($message->getPhone());
+        $request->setContent($message->getSubject());
+
+        $options = $message->getOptions();
+        if ($options instanceof MessageOptionsInterface) {
+            $request->setUid($options->getRecipientId());
+        }
+
+        return $request;
+    }
+
+    /**
+     * @param array<string, mixed> $response
+     */
+    private function validateResponse(array $response): void
+    {
+        if (isset($response['code']) && 0 !== $response['code']) {
+            $errorMsg = is_string($response['msg'] ?? null) ? $response['msg'] : '未知错误';
+            throw new RuntimeException(sprintf('云片短信发送失败: %s', $errorMsg));
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $response
+     */
+    private function createSentMessage(SmsMessage $message, array $response): SentMessage
+    {
+        $sentMessage = new SentMessage($message, (string) $this);
+
+        if (isset($response['sid']) && (is_string($response['sid']) || is_int($response['sid']))) {
+            $sentMessage->setMessageId((string) $response['sid']);
+        }
+
+        return $sentMessage;
     }
 
     public function supports(MessageInterface $message): bool
@@ -90,6 +105,7 @@ class NotifierSmsTransport implements TransportInterface
     private function getAccount(): ?Account
     {
         $validAccounts = $this->accountRepository->findAllValid();
+
         return $validAccounts[0] ?? null;
     }
 }

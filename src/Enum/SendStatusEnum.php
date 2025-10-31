@@ -22,7 +22,7 @@ enum SendStatusEnum: string implements Labelable, Itemable, Selectable
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => '待发送',
             self::SENDING => '发送中',
             self::SUCCESS => '发送成功',
@@ -32,6 +32,9 @@ enum SendStatusEnum: string implements Labelable, Itemable, Selectable
         };
     }
 
+    /**
+     * @return array<string, self>
+     */
     public static function getChoices(): array
     {
         return [

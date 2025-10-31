@@ -17,15 +17,17 @@ class GetTemplateListRequest implements RequestInterface
         return 'https://sms.yunpian.com/v2/tpl/del.json';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         return [
-            'headers' => [
-                'content-type' => 'application/x-www-form-urlencode',
-                'Accept' => 'application/json;charset=utf-8',
-            ],
-            'form' => [
+            'body' => http_build_query([
                 'apikey' => $this->account->getApiKey(),
+            ]),
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ],
         ];
     }

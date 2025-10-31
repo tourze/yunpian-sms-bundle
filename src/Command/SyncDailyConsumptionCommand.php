@@ -19,6 +19,7 @@ use YunpianSmsBundle\Service\DailyConsumptionService;
 class SyncDailyConsumptionCommand extends Command
 {
     public const NAME = 'yunpian:sync-daily-consumption';
+
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly DailyConsumptionService $dailyConsumptionService,
@@ -34,7 +35,7 @@ class SyncDailyConsumptionCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dateOption = $input->getOption('date');
-        $date = is_string($dateOption) && $dateOption !== ''
+        $date = is_string($dateOption) && '' !== $dateOption
             ? new \DateTime($dateOption)
             : new \DateTime('yesterday');
 
@@ -48,6 +49,7 @@ class SyncDailyConsumptionCommand extends Command
                 $output->writeln('同步成功');
             } catch (\Throwable $e) {
                 $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
+
                 return Command::FAILURE;
             }
         }

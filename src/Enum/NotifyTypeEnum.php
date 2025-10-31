@@ -20,7 +20,7 @@ enum NotifyTypeEnum: int implements Labelable, Itemable, Selectable
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ALWAYS => '始终通知',
             self::ONLY_FAILED => '仅审核不通过时通知',
             self::ONLY_SUCCESS => '仅审核通过时通知',
@@ -28,6 +28,9 @@ enum NotifyTypeEnum: int implements Labelable, Itemable, Selectable
         };
     }
 
+    /**
+     * @return array<string, self>
+     */
     public static function getChoices(): array
     {
         return [

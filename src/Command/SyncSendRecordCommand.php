@@ -20,6 +20,7 @@ use YunpianSmsBundle\Service\SendLogService;
 class SyncSendRecordCommand extends Command
 {
     public const NAME = 'yunpian:sync-send-record';
+
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly SendLogRepository $sendLogRepository,
@@ -38,12 +39,12 @@ class SyncSendRecordCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $startTimeOption = $input->getOption('start-time');
-        $startTime = is_string($startTimeOption) && $startTimeOption !== ''
+        $startTime = is_string($startTimeOption) && '' !== $startTimeOption
             ? new \DateTime($startTimeOption)
             : $this->getDefaultStartTime();
 
         $endTimeOption = $input->getOption('end-time');
-        $endTime = is_string($endTimeOption) && $endTimeOption !== ''
+        $endTime = is_string($endTimeOption) && '' !== $endTimeOption
             ? new \DateTime($endTimeOption)
             : new \DateTime();
 
@@ -60,6 +61,7 @@ class SyncSendRecordCommand extends Command
                 $output->writeln('同步成功');
             } catch (\Throwable $e) {
                 $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
+
                 return Command::FAILURE;
             }
         }
@@ -70,8 +72,8 @@ class SyncSendRecordCommand extends Command
     private function getDefaultStartTime(): \DateTime
     {
         $lastSendTime = $this->sendLogRepository->findLastSendTime();
-        if ($lastSendTime !== null) {
-            return $lastSendTime instanceof \DateTime ? $lastSendTime : new \DateTime($lastSendTime->format('Y-m-d H:i:s'));
+        if (null !== $lastSendTime) {
+            return new \DateTime($lastSendTime->format('Y-m-d H:i:s'));
         }
 
         // 如果没有记录，默认同步最近24小时的数据

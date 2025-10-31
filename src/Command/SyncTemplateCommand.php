@@ -16,6 +16,7 @@ use YunpianSmsBundle\Service\TemplateService;
 class SyncTemplateCommand extends Command
 {
     public const NAME = 'yunpian:sync-template';
+
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly TemplateService $templateService,
@@ -35,6 +36,7 @@ class SyncTemplateCommand extends Command
                 $output->writeln('同步成功');
             } catch (\Throwable $e) {
                 $output->writeln(sprintf('同步失败: %s', $e->getMessage()));
+
                 return Command::FAILURE;
             }
         }

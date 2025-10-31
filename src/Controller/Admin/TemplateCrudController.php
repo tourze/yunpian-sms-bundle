@@ -24,8 +24,11 @@ use YunpianSmsBundle\Entity\Template;
 use YunpianSmsBundle\Enum\NotifyTypeEnum;
 use YunpianSmsBundle\Enum\TemplateTypeEnum;
 
+/**
+ * @extends AbstractCrudController<Template>
+ */
 #[AdminCrud(routePath: '/yunpian/template', routeName: 'yunpian_template')]
-class TemplateCrudController extends AbstractCrudController
+final class TemplateCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -43,22 +46,27 @@ class TemplateCrudController extends AbstractCrudController
             ->setPageTitle('detail', '短信模板详情')
             ->setHelp('index', '管理云片短信模板配置')
             ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['tplId', 'title', 'content']);
+            ->setSearchFields(['tplId', 'title', 'content'])
+        ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')->setMaxLength(9999)->hideOnForm();
         yield AssociationField::new('account', '账号')
-            ->setHelp('选择对应的云片账号');
+            ->setHelp('选择对应的云片账号')
+        ;
         yield TextField::new('tplId', '模板ID')
             ->setHelp('云片平台的模板ID')
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
         yield TextField::new('title', '模板标题')
-            ->setHelp('模板的显示标题');
+            ->setHelp('模板的显示标题')
+        ;
         yield TextareaField::new('content', '模板内容')
             ->setNumOfRows(4)
-            ->setHelp('短信模板内容，支持变量替换');
+            ->setHelp('短信模板内容，支持变量替换')
+        ;
         yield TextField::new('checkStatus', '审核状态')
             ->hideOnForm()
             ->formatValue(function ($value) {
@@ -68,40 +76,49 @@ class TemplateCrudController extends AbstractCrudController
                     'FAIL' => '❌ 审核失败',
                     default => $value ?? '未知',
                 };
-            });
+            })
+        ;
         yield TextareaField::new('checkReply', '审核说明')
             ->setNumOfRows(2)
             ->hideOnIndex()
-            ->hideOnForm();
+            ->hideOnForm()
+        ;
         yield ChoiceField::new('notifyType', '通知方式')
             ->setFormType(EnumType::class)
             ->setFormTypeOptions(['class' => NotifyTypeEnum::class])
             ->formatValue(function ($value) {
                 return $value instanceof NotifyTypeEnum ? $value->getLabel() : '';
-            });
+            })
+        ;
         yield ChoiceField::new('templateType', '模板类型')
             ->setFormType(EnumType::class)
             ->setFormTypeOptions(['class' => TemplateTypeEnum::class])
             ->formatValue(function ($value) {
                 return $value instanceof TemplateTypeEnum ? $value->getLabel() : '';
-            });
+            })
+        ;
         yield TextField::new('website', '官网地址')
             ->hideOnIndex()
-            ->setHelp('验证码类模板需要填写对应的官网注册页面');
+            ->setHelp('验证码类模板需要填写对应的官网注册页面')
+        ;
         yield TextareaField::new('applyDescription', '申请说明')
             ->setNumOfRows(3)
             ->hideOnIndex()
-            ->setHelp('说明模板的发送场景和对象');
+            ->setHelp('说明模板的发送场景和对象')
+        ;
         yield TextField::new('callback', '回调地址')
             ->hideOnIndex()
-            ->setHelp('审核结果回调通知地址');
+            ->setHelp('审核结果回调通知地址')
+        ;
         yield BooleanField::new('valid', '是否有效');
-        yield DateTimeField::new('createdAt', '创建时间')
+        yield DateTimeField::new('createTime', '创建时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
-        yield DateTimeField::new('updatedAt', '更新时间')
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
+        yield DateTimeField::new('updateTime', '更新时间')
             ->hideOnForm()
-            ->setFormat('yyyy-MM-dd HH:mm:ss');
+            ->setFormat('yyyy-MM-dd HH:mm:ss')
+        ;
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -123,13 +140,17 @@ class TemplateCrudController extends AbstractCrudController
             ->add(TextFilter::new('checkStatus', '审核状态'))
             ->add(ChoiceFilter::new('notifyType', '通知方式')->setChoices($notifyTypeChoices))
             ->add(ChoiceFilter::new('templateType', '模板类型')->setChoices($templateTypeChoices))
-            ->add(BooleanFilter::new('valid', '是否有效'));
+            ->add(BooleanFilter::new('valid', '是否有效'))
+        ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->reorder(Crud::PAGE_INDEX, [Action::DETAIL, Action::EDIT, Action::DELETE]);
+            ->setPermission(Action::DETAIL, 'ROLE_ADMIN')
+            ->setPermission(Action::EDIT, 'ROLE_ADMIN')
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+        ;
     }
 }

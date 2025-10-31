@@ -4,45 +4,37 @@ namespace YunpianSmsBundle\Tests\Mock;
 
 use YunpianSmsBundle\Entity\Account;
 use YunpianSmsBundle\Entity\Template;
+use YunpianSmsBundle\Enum\NotifyTypeEnum;
+use YunpianSmsBundle\Enum\TemplateTypeEnum;
 
 class MockHelper
 {
-    /**
-     * 创建测试用的Account实例
-     */
-    public static function createAccount(string $apiKey = 'test-api-key', bool $valid = true): Account
+    public static function createAccount(): Account
     {
         $account = new Account();
-        $account->setApiKey($apiKey);
-        $account->setValid($valid);
-        $account->setRemark('测试账号');
+        $account->setApiKey('test-api-key-' . uniqid());
+        $account->setValid(true);
+        $account->setRemark('Test Account');
+
         return $account;
     }
-    
-    /**
-     * 创建测试用的Template实例
-     */
-    public static function createTemplate(Account $account, string $tplId = 'template-001'): Template
+
+    public static function createTemplate(Account $account): Template
     {
         $template = new Template();
         $template->setAccount($account);
-        $template->setTplId($tplId);
-        $template->setTitle('测试模板');
-        $template->setContent('您的验证码是#code#');
-        $template->setCheckStatus('SUCCESS');
+        $template->setTplId('123456789');
+        $template->setTitle('Test Template');
+        $template->setContent('Test content with #var# placeholder');
+        $template->setCheckStatus('approved');
+        $template->setCheckReply('Template approved');
+        $template->setNotifyType(NotifyTypeEnum::ALWAYS);
+        $template->setTemplateType(TemplateTypeEnum::NOTIFICATION);
+        $template->setWebsite('https://example.com');
+        $template->setApplyDescription('Test template for unit testing');
+        $template->setCallback('https://example.com/callback');
+        $template->setValid(true);
+
         return $template;
     }
-
-    /**
-     * 创建测试用的Sign实例
-     */
-    public static function createSign(Account $account, string $sign = '测试签名'): \YunpianSmsBundle\Entity\Sign
-    {
-        $signEntity = new \YunpianSmsBundle\Entity\Sign();
-        $signEntity->setAccount($account);
-        $signEntity->setSign($sign);
-        $signEntity->setApplyState('SUCCESS');
-        $signEntity->setValid(true);
-        return $signEntity;
-    }
-} 
+}

@@ -8,6 +8,7 @@ use YunpianSmsBundle\Request\RequestInterface;
 class GetTemplateRequest implements RequestInterface
 {
     private string $apiKey;
+
     private ?string $tplId = null;
 
     public function getRequestMethod(): string
@@ -17,21 +18,27 @@ class GetTemplateRequest implements RequestInterface
 
     public function getRequestPath(): string
     {
-        return '/v2/tpl/get.json';
+        return 'https://sms.yunpian.com/v2/tpl/get.json';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getRequestOptions(): array
     {
         $params = [
-            'apikey' => $this->apiKey
+            'apikey' => $this->apiKey,
         ];
-        
-        if ($this->tplId !== null) {
+
+        if (null !== $this->tplId) {
             $params['tpl_id'] = $this->tplId;
         }
-        
+
         return [
-            'form_params' => $params
+            'body' => http_build_query($params),
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
         ];
     }
 
@@ -39,14 +46,14 @@ class GetTemplateRequest implements RequestInterface
     {
         $this->apiKey = $account->getApiKey();
     }
-    
+
     public function setTplId(?string $tplId): void
     {
         $this->tplId = $tplId;
     }
-    
+
     public function getTplId(): ?string
     {
         return $this->tplId;
     }
-} 
+}
