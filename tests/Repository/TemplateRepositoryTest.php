@@ -2,6 +2,7 @@
 
 namespace YunpianSmsBundle\Tests\Repository;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
@@ -12,6 +13,7 @@ use YunpianSmsBundle\Repository\TemplateRepository;
 
 /**
  * @internal
+ * @extends AbstractRepositoryTestCase<Template>
  */
 #[CoversClass(TemplateRepository::class)]
 #[RunTestsInSeparateProcesses]
@@ -408,7 +410,7 @@ final class TemplateRepositoryTest extends AbstractRepositoryTestCase
         return $entity;
     }
 
-    protected function getRepository(): TemplateRepository
+    protected function getRepository(): ServiceEntityRepository
     {
         return $this->repository;
     }

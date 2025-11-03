@@ -2,6 +2,7 @@
 
 namespace YunpianSmsBundle\Tests\Repository;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
@@ -11,6 +12,7 @@ use YunpianSmsBundle\Repository\DailyConsumptionRepository;
 
 /**
  * @internal
+ * @extends AbstractRepositoryTestCase<DailyConsumption>
  */
 #[CoversClass(DailyConsumptionRepository::class)]
 #[RunTestsInSeparateProcesses]
@@ -405,7 +407,7 @@ final class DailyConsumptionRepositoryTest extends AbstractRepositoryTestCase
         return $entity;
     }
 
-    protected function getRepository(): DailyConsumptionRepository
+    protected function getRepository(): ServiceEntityRepository
     {
         return $this->repository;
     }

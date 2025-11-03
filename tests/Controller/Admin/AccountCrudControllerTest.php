@@ -58,12 +58,7 @@ final class AccountCrudControllerTest extends AbstractEasyAdminControllerTestCas
 
     public function testGetEntityFqcn(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/admin');
         $this->assertSame(Account::class, AccountCrudController::getEntityFqcn());
@@ -71,14 +66,9 @@ final class AccountCrudControllerTest extends AbstractEasyAdminControllerTestCas
 
     public function testControllerConfigurationMethods(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
+        $client = $this->createAuthenticatedClient();
 
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
-
-        $controller = new AccountCrudController();
+        $controller = self::getService(AccountCrudController::class);
 
         $client->request('GET', '/admin');
         $this->assertInstanceOf(Crud::class, $controller->configureCrud(Crud::new()));
@@ -88,14 +78,9 @@ final class AccountCrudControllerTest extends AbstractEasyAdminControllerTestCas
 
     public function testControllerHasValidRequiredFieldConfiguration(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
+        $client = $this->createAuthenticatedClient();
 
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
-
-        $controller = new AccountCrudController();
+        $controller = self::getService(AccountCrudController::class);
 
         $client->request('GET', '/admin');
         $fields = iterator_to_array($controller->configureFields('index'));
@@ -122,31 +107,21 @@ final class AccountCrudControllerTest extends AbstractEasyAdminControllerTestCas
 
     public function testSearchFunctionalityForAllFilters(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         // 测试搜索和过滤功能通过 HTTP 请求
         $response = $client->request('GET', '/admin');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // 验证控制器配置方法可以正常调用
-        $controller = new AccountCrudController();
+        $controller = self::getService(AccountCrudController::class);
         $filters = $controller->configureFilters(Filters::new());
         // configureFilters已知返回非null，移除冗余断言
     }
 
     public function testActionsConfiguration(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         // 测试操作配置通过 HTTP 请求
         $response = $client->request('GET', '/admin');
@@ -160,12 +135,7 @@ final class AccountCrudControllerTest extends AbstractEasyAdminControllerTestCas
 
     public function testValidationForRequiredFields(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         // 测试字段验证功能通过 HTTP 请求
         $response = $client->request('GET', '/admin');

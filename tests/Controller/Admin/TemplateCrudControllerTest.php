@@ -85,12 +85,7 @@ final class TemplateCrudControllerTest extends AbstractEasyAdminControllerTestCa
 
     public function testGetEntityFqcn(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         $client->request('GET', '/admin');
         $this->assertSame(Template::class, TemplateCrudController::getEntityFqcn());
@@ -98,12 +93,7 @@ final class TemplateCrudControllerTest extends AbstractEasyAdminControllerTestCa
 
     public function testControllerConfigurationMethods(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         $controller = new TemplateCrudController();
 
@@ -115,12 +105,7 @@ final class TemplateCrudControllerTest extends AbstractEasyAdminControllerTestCa
 
     public function testControllerHasValidRequiredFieldConfiguration(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         $controller = new TemplateCrudController();
 
@@ -149,12 +134,7 @@ final class TemplateCrudControllerTest extends AbstractEasyAdminControllerTestCa
 
     public function testSearchFunctionalityForAllFilters(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         // 测试搜索和过滤功能通过 HTTP 请求
         $response = $client->request('GET', '/admin');
@@ -168,12 +148,7 @@ final class TemplateCrudControllerTest extends AbstractEasyAdminControllerTestCa
 
     public function testActionsConfiguration(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         // 测试操作配置通过 HTTP 请求
         $response = $client->request('GET', '/admin');
@@ -187,12 +162,7 @@ final class TemplateCrudControllerTest extends AbstractEasyAdminControllerTestCa
 
     public function testValidationForRequiredFields(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = $this->createAuthenticatedClient();
 
         // 测试字段验证功能通过 HTTP 请求
         $response = $client->request('GET', '/admin');

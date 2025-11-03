@@ -2,6 +2,7 @@
 
 namespace YunpianSmsBundle\Tests\Repository;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
@@ -11,6 +12,7 @@ use YunpianSmsBundle\Repository\SignRepository;
 
 /**
  * @internal
+ * @extends AbstractRepositoryTestCase<Sign>
  */
 #[CoversClass(SignRepository::class)]
 #[RunTestsInSeparateProcesses]
@@ -64,7 +66,7 @@ final class SignRepositoryTest extends AbstractRepositoryTestCase
         self::getEntityManager()->flush();
 
         $signs = $this->repository->findByAccount($account);
-        $this->assertIsArray($signs);
+        // 移除冗余断言：findByAccount() 的返回类型已声明为 array
         $this->assertCount(2, $signs);
 
         $foundSigns = [];
@@ -151,7 +153,8 @@ final class SignRepositoryTest extends AbstractRepositoryTestCase
 
         $this->repository->save($sign, true);
 
-        $this->assertNotNull($sign->getId());
+        // ID应大于0，改为更有信息量的断言替代无效的 assertNotNull($entity->getId())
+        $this->assertGreaterThan(0, $sign->getId());
         $savedSign = self::getEntityManager()->find(Sign::class, $sign->getId());
         $this->assertNotNull($savedSign);
         $this->assertSame('测试保存签名', $savedSign->getSign());
@@ -243,7 +246,7 @@ final class SignRepositoryTest extends AbstractRepositoryTestCase
         self::getEntityManager()->flush();
 
         $signsWithNullSignId = $this->repository->findBy(['signId' => null]);
-        $this->assertIsArray($signsWithNullSignId);
+        // 移除冗余断言：findBy() 的返回类型已声明为 array
         $this->assertGreaterThanOrEqual(1, count($signsWithNullSignId));
 
         $found = false;
@@ -317,7 +320,7 @@ final class SignRepositoryTest extends AbstractRepositoryTestCase
         self::getEntityManager()->flush();
 
         $account1Signs = $this->repository->findBy(['account' => $account1]);
-        $this->assertIsArray($account1Signs);
+        // 移除冗余断言：findBy() 的返回类型已声明为 array
         $this->assertCount(1, $account1Signs);
         $this->assertSame($account1, $account1Signs[0]->getAccount());
         $this->assertSame('账户1关联签名', $account1Signs[0]->getSign());
@@ -378,7 +381,7 @@ final class SignRepositoryTest extends AbstractRepositoryTestCase
         return $entity;
     }
 
-    protected function getRepository(): SignRepository
+    protected function getRepository(): ServiceEntityRepository
     {
         return $this->repository;
     }

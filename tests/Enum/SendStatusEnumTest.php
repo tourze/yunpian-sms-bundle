@@ -54,7 +54,7 @@ final class SendStatusEnumTest extends AbstractEnumTestCase
     public function testToArray(): void
     {
         $array = SendStatusEnum::PENDING->toArray();
-        $this->assertIsArray($array);
+        // 移除冗余断言：toArray() 的返回类型已在 ItemTrait 中声明为 array
         $this->assertArrayHasKey('value', $array);
         $this->assertArrayHasKey('label', $array);
         $this->assertEquals('pending', $array['value']);

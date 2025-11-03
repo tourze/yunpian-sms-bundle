@@ -2,6 +2,7 @@
 
 namespace YunpianSmsBundle\Tests\Repository;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractRepositoryTestCase;
@@ -10,6 +11,7 @@ use YunpianSmsBundle\Repository\AccountRepository;
 
 /**
  * @internal
+ * @extends AbstractRepositoryTestCase<Account>
  */
 #[CoversClass(AccountRepository::class)]
 #[RunTestsInSeparateProcesses]
@@ -61,7 +63,7 @@ final class AccountRepositoryTest extends AbstractRepositoryTestCase
         self::getEntityManager()->flush();
 
         $validAccounts = $this->repository->findAllValid();
-        $this->assertIsArray($validAccounts);
+        // 移除冗余断言：findAllValid() 的返回类型已声明为 array
         $this->assertGreaterThanOrEqual(1, count($validAccounts));
 
         $foundValidAccount = false;
@@ -93,6 +95,8 @@ final class AccountRepositoryTest extends AbstractRepositoryTestCase
 
         $this->repository->save($account);
 
+        // ID应大于0，改为更有信息量的断言替代无效的 assertNotNull($entity->getId())
+        $this->assertGreaterThan(0, $account->getId());
         $foundAccount = $this->repository->find($account->getId());
         $this->assertNotNull($foundAccount);
         $this->assertSame($account->getApiKey(), $foundAccount->getApiKey());
@@ -153,7 +157,7 @@ final class AccountRepositoryTest extends AbstractRepositoryTestCase
         self::getEntityManager()->flush();
 
         $nullValidAccounts = $this->repository->findBy(['valid' => null]);
-        $this->assertIsArray($nullValidAccounts);
+        // 移除冗余断言：findBy() 的返回类型已声明为 array
         $this->assertGreaterThanOrEqual(1, count($nullValidAccounts));
 
         $foundAccount = false;
@@ -180,7 +184,7 @@ final class AccountRepositoryTest extends AbstractRepositoryTestCase
         self::getEntityManager()->flush();
 
         $nullRemarkAccounts = $this->repository->findBy(['remark' => null]);
-        $this->assertIsArray($nullRemarkAccounts);
+        // 移除冗余断言：findBy() 的返回类型已声明为 array
         $this->assertGreaterThanOrEqual(1, count($nullRemarkAccounts));
 
         $foundAccount = false;
@@ -254,7 +258,7 @@ final class AccountRepositoryTest extends AbstractRepositoryTestCase
         return $entity;
     }
 
-    protected function getRepository(): AccountRepository
+    protected function getRepository(): ServiceEntityRepository
     {
         return $this->repository;
     }
