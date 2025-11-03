@@ -8,6 +8,7 @@ use Tourze\BundleDependency\BundleDependencyInterface;
 use Tourze\DoctrineIndexedBundle\DoctrineIndexedBundle;
 use Tourze\DoctrineTimestampBundle\DoctrineTimestampBundle;
 use Tourze\DoctrineTrackBundle\DoctrineTrackBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
 class YunpianSmsBundle extends Bundle implements BundleDependencyInterface
 {
@@ -18,6 +19,7 @@ class YunpianSmsBundle extends Bundle implements BundleDependencyInterface
             DoctrineIndexedBundle::class => ['all' => true],
             DoctrineTimestampBundle::class => ['all' => true],
             DoctrineTrackBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }
