@@ -3,6 +3,7 @@
 namespace YunpianSmsBundle\Tests\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -61,29 +62,18 @@ final class DailyConsumptionCrudControllerTest extends AbstractEasyAdminControll
 
     public function testGetEntityFqcn(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
-
-        $client->request('GET', '/admin');
+        $client = self::createAuthenticatedClient();
+        $client->request('GET', $this->generateAdminUrl(Action::INDEX));
         $this->assertSame(DailyConsumption::class, DailyConsumptionCrudController::getEntityFqcn());
     }
 
     public function testControllerConfigurationMethods(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = self::createAuthenticatedClient();
 
         $controller = new DailyConsumptionCrudController();
 
-        $client->request('GET', '/admin');
+        $client->request('GET', $this->generateAdminUrl(Action::INDEX));
         $this->assertInstanceOf(Crud::class, $controller->configureCrud(Crud::new()));
         // configureFields已知返回iterable，移除冗余断言
         $this->assertNotEmpty(iterator_to_array($controller->configureFields('index')));
@@ -91,16 +81,11 @@ final class DailyConsumptionCrudControllerTest extends AbstractEasyAdminControll
 
     public function testControllerHasValidRequiredFieldConfiguration(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = self::createAuthenticatedClient();
 
         $controller = new DailyConsumptionCrudController();
 
-        $client->request('GET', '/admin');
+        $client->request('GET', $this->generateAdminUrl(Action::INDEX));
         $fields = iterator_to_array($controller->configureFields('index'));
 
         $this->assertNotEmpty($fields, 'Controller should configure fields for display');
@@ -125,15 +110,10 @@ final class DailyConsumptionCrudControllerTest extends AbstractEasyAdminControll
 
     public function testSearchFunctionalityForAllFilters(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = self::createAuthenticatedClient();
 
         // 测试搜索和过滤功能通过 HTTP 请求
-        $response = $client->request('GET', '/admin');
+        $response = $client->request('GET', $this->generateAdminUrl(Action::INDEX));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // 验证控制器配置方法可以正常调用
@@ -144,15 +124,10 @@ final class DailyConsumptionCrudControllerTest extends AbstractEasyAdminControll
 
     public function testActionsConfiguration(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = self::createAuthenticatedClient();
 
         // 测试操作配置通过 HTTP 请求
-        $response = $client->request('GET', '/admin');
+        $response = $client->request('GET', $this->generateAdminUrl(Action::INDEX));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // 验证控制器配置方法可以正常调用
@@ -163,15 +138,10 @@ final class DailyConsumptionCrudControllerTest extends AbstractEasyAdminControll
 
     public function testValidationForRequiredFields(): void
     {
-        $client = self::createClientWithDatabase([
-            YunpianSmsBundle::class => ['all' => true],
-        ]);
-
-        $admin = $this->createAdminUser('admin@test.com', 'password');
-        $this->loginAsAdmin($client, 'admin@test.com', 'password');
+        $client = self::createAuthenticatedClient();
 
         // 测试字段验证功能通过 HTTP 请求
-        $response = $client->request('GET', '/admin');
+        $response = $client->request('GET', $this->generateAdminUrl(Action::INDEX));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // 验证控制器字段配置方法可以正常调用
