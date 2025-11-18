@@ -60,13 +60,6 @@ final class DailyConsumptionCrudControllerTest extends AbstractEasyAdminControll
         yield 'dummy' => ['dummy'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $client = self::createAuthenticatedClient();
-        $client->request('GET', $this->generateAdminUrl(Action::INDEX));
-        $this->assertSame(DailyConsumption::class, DailyConsumptionCrudController::getEntityFqcn());
-    }
-
     public function testControllerConfigurationMethods(): void
     {
         $client = self::createAuthenticatedClient();

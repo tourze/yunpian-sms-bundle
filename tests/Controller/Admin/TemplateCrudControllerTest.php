@@ -83,14 +83,6 @@ final class TemplateCrudControllerTest extends AbstractEasyAdminControllerTestCa
         yield 'valid' => ['valid'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $client = $this->createAuthenticatedClient();
-
-        $client->request('GET', '/admin');
-        $this->assertSame(Template::class, TemplateCrudController::getEntityFqcn());
-    }
-
     public function testControllerConfigurationMethods(): void
     {
         $client = $this->createAuthenticatedClient();

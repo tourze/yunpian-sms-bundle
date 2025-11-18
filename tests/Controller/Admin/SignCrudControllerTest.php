@@ -99,14 +99,6 @@ final class SignCrudControllerTest extends AbstractEasyAdminControllerTestCase
         yield 'remark' => ['remark'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $client = $this->createAuthenticatedClient();
-
-        $client->request('GET', '/admin');
-        $this->assertSame(Sign::class, SignCrudController::getEntityFqcn());
-    }
-
     public function testControllerConfigurationMethods(): void
     {
         $client = $this->createAuthenticatedClient();

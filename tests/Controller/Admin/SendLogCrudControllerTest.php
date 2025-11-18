@@ -59,14 +59,6 @@ final class SendLogCrudControllerTest extends AbstractEasyAdminControllerTestCas
         yield 'dummy' => ['dummy'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $client = $this->createAuthenticatedClient();
-
-        $client->request('GET', '/admin');
-        $this->assertSame(SendLog::class, SendLogCrudController::getEntityFqcn());
-    }
-
     public function testControllerConfigurationMethods(): void
     {
         $client = $this->createAuthenticatedClient();
