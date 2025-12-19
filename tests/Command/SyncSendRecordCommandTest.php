@@ -22,7 +22,7 @@ final class SyncSendRecordCommandTest extends AbstractCommandTestCase
         self::assertInstanceOf(SyncSendRecordCommand::class, $command);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         return new CommandTester($command);
     }

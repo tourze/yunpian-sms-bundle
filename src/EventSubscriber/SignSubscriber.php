@@ -11,7 +11,7 @@ use YunpianSmsBundle\Service\SignService;
 #[AsEntityListener(event: Events::prePersist, method: 'prePersist', entity: Sign::class)]
 #[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: Sign::class)]
 #[AsEntityListener(event: Events::preRemove, method: 'preRemove', entity: Sign::class)]
-class SignSubscriber
+final class SignSubscriber
 {
     public function __construct(
         private readonly SignService $signService,

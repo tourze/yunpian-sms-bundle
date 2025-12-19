@@ -21,3 +21,7 @@ services:
   # AdminMenu 服务需要公开以便测试
   YunpianSmsBundle\Service\AdminMenu:
     public: true
+
+  # NotifierSmsTransport 服务需要公开以便测试
+  YunpianSmsBundle\Service\NotifierSmsTransport:
+    public: true

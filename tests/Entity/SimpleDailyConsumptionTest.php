@@ -5,7 +5,6 @@ namespace YunpianSmsBundle\Tests\Entity;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use YunpianSmsBundle\Entity\DailyConsumption;
-use YunpianSmsBundle\Tests\Mock\MockHelper;
 
 /**
  * @internal

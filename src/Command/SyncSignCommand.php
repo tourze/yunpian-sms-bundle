@@ -13,7 +13,7 @@ use YunpianSmsBundle\Service\SignService;
     name: self::NAME,
     description: '同步云片短信签名'
 )]
-class SyncSignCommand extends Command
+final class SyncSignCommand extends Command
 {
     public const NAME = 'yunpian:sync-sign';
 

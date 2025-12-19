@@ -13,7 +13,7 @@ use YunpianSmsBundle\Service\TemplateService;
     name: self::NAME,
     description: '同步云片短信模板'
 )]
-class SyncTemplateCommand extends Command
+final class SyncTemplateCommand extends Command
 {
     public const NAME = 'yunpian:sync-template';
 

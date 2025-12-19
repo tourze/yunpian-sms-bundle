@@ -12,7 +12,7 @@ use YunpianSmsBundle\Entity\Sign;
  * @extends ServiceEntityRepository<Sign>
  */
 #[AsRepository(entityClass: Sign::class)]
-class SignRepository extends ServiceEntityRepository
+final class SignRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

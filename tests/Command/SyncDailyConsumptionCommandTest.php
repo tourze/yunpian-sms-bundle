@@ -22,7 +22,7 @@ final class SyncDailyConsumptionCommandTest extends AbstractCommandTestCase
         self::assertInstanceOf(SyncDailyConsumptionCommand::class, $command);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         return new CommandTester($command);
     }

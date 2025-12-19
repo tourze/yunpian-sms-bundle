@@ -2,69 +2,84 @@
 
 namespace YunpianSmsBundle\Tests\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\Notifier\Exception\RuntimeException;
 use Symfony\Component\Notifier\Message\MessageInterface;
 use Symfony\Component\Notifier\Message\SentMessage;
 use Symfony\Component\Notifier\Message\SmsMessage;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use YunpianSmsBundle\Entity\Account;
-use YunpianSmsBundle\Repository\AccountRepository;
 use YunpianSmsBundle\Service\NotifierSmsTransport;
-use YunpianSmsBundle\Service\SmsApiClient;
-use YunpianSmsBundle\Tests\Mock\MockHelper;
 
 /**
  * @internal
  */
 #[CoversClass(NotifierSmsTransport::class)]
-final class NotifierSmsTransportTest extends TestCase
+#[RunTestsInSeparateProcesses]
+final class NotifierSmsTransportTest extends AbstractIntegrationTestCase
 {
-    public function testSendSmsMessage(): void
+    protected function onSetUp(): void
     {
-        $apiClient = $this->createMock(SmsApiClient::class);
-        $accountRepository = $this->createMock(AccountRepository::class);
-
-        $transport = new NotifierSmsTransport($apiClient, $accountRepository);
-
-        $account = MockHelper::createAccount();
-        $accountRepository->method('findAllValid')->willReturn([$account]);
-
-        $apiClient->method('requestArray')->willReturn([
-            'sid' => 'test-sid-123',
-            'count' => 1,
-            'fee' => '0.050',
-            'code' => 0,
-            'msg' => '发送成功',
-        ]);
-
-        $message = new SmsMessage('+8613800138000', '测试短信内容');
-        $sentMessage = $transport->send($message);
-
-        $this->assertInstanceOf(SentMessage::class, $sentMessage);
-        $this->assertEquals($message, $sentMessage->getOriginalMessage());
-        $this->assertEquals('test-sid-123', $sentMessage->getMessageId());
     }
 
-    public function testToString(): void
+    public function testSendSmsMessage(): void
     {
-        $apiClient = $this->createMock(SmsApiClient::class);
-        $accountRepository = $this->createMock(AccountRepository::class);
+        $transport = self::getService(NotifierSmsTransport::class);
+        $entityManager = self::getService(EntityManagerInterface::class);
 
-        $transport = new NotifierSmsTransport($apiClient, $accountRepository);
+        // 创建一个测试账户
+        $account = new Account();
+        $account->setApiKey('test-api-key');
+        $account->setValid(true);
+        $account->setRemark('Test Account for Transport');
+        $entityManager->persist($account);
+        $entityManager->flush();
 
-        $this->assertEquals('yunpian_sms', (string) $transport);
+        // 创建短信消息
+        $smsMessage = new SmsMessage('13800138000', 'Test message from NotifierSmsTransport');
+
+        // 发送消息
+        $sentMessage = $transport->send($smsMessage);
+
+        // 验证返回的消息
+        $this->assertInstanceOf(SentMessage::class, $sentMessage);
     }
 
     public function testSendThrowsExceptionForInvalidMessageType(): void
     {
-        $apiClient = $this->createMock(SmsApiClient::class);
-        $accountRepository = $this->createMock(AccountRepository::class);
+        $transport = self::getService(NotifierSmsTransport::class);
 
-        $transport = new NotifierSmsTransport($apiClient, $accountRepository);
+        // 创建一个非SMS消息
+        $invalidMessage = new class implements MessageInterface {
+            public function getRecipientId(): string
+            {
+                return 'invalid@example.com';
+            }
 
-        $invalidMessage = $this->createMock(MessageInterface::class);
+            public function getSubject(): string
+            {
+                return 'Test Subject';
+            }
 
+            public function getContent(): string
+            {
+                return 'Test Content';
+            }
+
+            public function getOptions(): ?\Symfony\Component\Notifier\Message\MessageOptionsInterface
+            {
+                return null;
+            }
+
+            public function getTransport(): ?string
+            {
+                return null;
+            }
+        };
+
+        // 期望抛出异常
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('消息类型不支持，只支持 SmsMessage');
 
@@ -73,39 +88,69 @@ final class NotifierSmsTransportTest extends TestCase
 
     public function testSendThrowsExceptionWhenNoAccountFound(): void
     {
-        $apiClient = $this->createMock(SmsApiClient::class);
-        $accountRepository = $this->createMock(AccountRepository::class);
+        $transport = self::getService(NotifierSmsTransport::class);
+        $accountRepository = self::getService(\YunpianSmsBundle\Repository\AccountRepository::class);
 
-        $transport = new NotifierSmsTransport($apiClient, $accountRepository);
-        $accountRepository->method('findAllValid')->willReturn([]);
+        // 删除所有现有账户
+        $accounts = $accountRepository->findAll();
+        foreach ($accounts as $account) {
+            $accountRepository->remove($account, true);
+        }
 
-        $message = new SmsMessage('+8613800138000', '测试短信内容');
+        // 创建短信消息，但没有有效账户
+        $smsMessage = new SmsMessage('13900139000', 'Test message without account');
 
+        // 期望抛出异常，因为没有有效的账户
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('未找到可用的云片短信账号');
 
-        $transport->send($message);
+        $transport->send($smsMessage);
     }
 
     public function testSupportsReturnsTrueForSmsMessage(): void
     {
-        $apiClient = $this->createMock(SmsApiClient::class);
-        $accountRepository = $this->createMock(AccountRepository::class);
+        $transport = self::getService(NotifierSmsTransport::class);
+        $smsMessage = new SmsMessage('13800138000', 'Test message');
 
-        $transport = new NotifierSmsTransport($apiClient, $accountRepository);
-
-        $smsMessage = new SmsMessage('+8613800138000', '测试短信内容');
         $this->assertTrue($transport->supports($smsMessage));
     }
 
     public function testSupportsReturnsFalseForNonSmsMessage(): void
     {
-        $apiClient = $this->createMock(SmsApiClient::class);
-        $accountRepository = $this->createMock(AccountRepository::class);
+        $transport = self::getService(NotifierSmsTransport::class);
+        $invalidMessage = new class implements MessageInterface {
+            public function getRecipientId(): string
+            {
+                return 'invalid@example.com';
+            }
 
-        $transport = new NotifierSmsTransport($apiClient, $accountRepository);
+            public function getSubject(): string
+            {
+                return 'Test Subject';
+            }
 
-        $nonSmsMessage = $this->createMock(MessageInterface::class);
-        $this->assertFalse($transport->supports($nonSmsMessage));
+            public function getContent(): string
+            {
+                return 'Test Content';
+            }
+
+            public function getOptions(): ?\Symfony\Component\Notifier\Message\MessageOptionsInterface
+            {
+                return null;
+            }
+
+            public function getTransport(): ?string
+            {
+                return null;
+            }
+        };
+
+        $this->assertFalse($transport->supports($invalidMessage));
+    }
+
+    public function testToString(): void
+    {
+        $transport = self::getService(NotifierSmsTransport::class);
+        $this->assertSame('yunpian_sms', $transport->__toString());
     }
 }

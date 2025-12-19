@@ -16,7 +16,7 @@ use YunpianSmsBundle\Service\DailyConsumptionService;
     description: '同步云片短信日消耗'
 )]
 #[AsCronTask(expression: '15 */4 * * *')]
-class SyncDailyConsumptionCommand extends Command
+final class SyncDailyConsumptionCommand extends Command
 {
     public const NAME = 'yunpian:sync-daily-consumption';
 

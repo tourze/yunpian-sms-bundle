@@ -12,7 +12,7 @@ use YunpianSmsBundle\Entity\Template;
  * @extends ServiceEntityRepository<Template>
  */
 #[AsRepository(entityClass: Template::class)]
-class TemplateRepository extends ServiceEntityRepository
+final class TemplateRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

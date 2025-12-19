@@ -14,7 +14,7 @@ use YunpianSmsBundle\Service\SendLogService;
     description: '同步云片短信发送状态'
 )]
 #[AsCronTask(expression: '*/5 * * * *')]
-class SyncSendStatusCommand extends Command
+final class SyncSendStatusCommand extends Command
 {
     public const NAME = 'yunpian:sync-send-status';
 

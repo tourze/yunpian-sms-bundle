@@ -22,7 +22,7 @@ final class SyncSignCommandTest extends AbstractCommandTestCase
         self::assertInstanceOf(SyncSignCommand::class, $command);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         return new CommandTester($command);
     }

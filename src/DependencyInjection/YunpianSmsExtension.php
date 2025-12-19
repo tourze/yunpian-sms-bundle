@@ -4,7 +4,7 @@ namespace YunpianSmsBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class YunpianSmsExtension extends AutoExtension
+final class YunpianSmsExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {

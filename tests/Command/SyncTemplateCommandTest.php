@@ -22,7 +22,7 @@ final class SyncTemplateCommandTest extends AbstractCommandTestCase
         self::assertInstanceOf(SyncTemplateCommand::class, $command);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         return new CommandTester($command);
     }

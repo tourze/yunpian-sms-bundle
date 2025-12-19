@@ -11,7 +11,7 @@ use YunpianSmsBundle\Service\TemplateService;
 #[AsEntityListener(event: Events::prePersist, method: 'prePersist', entity: Template::class)]
 #[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: Template::class)]
 #[AsEntityListener(event: Events::preRemove, method: 'preRemove', entity: Template::class)]
-class TemplateSubscriber
+final class TemplateSubscriber
 {
     public function __construct(
         private readonly TemplateService $templateService,

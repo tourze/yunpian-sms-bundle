@@ -12,7 +12,7 @@ use YunpianSmsBundle\Entity\DailyConsumption;
  * @extends ServiceEntityRepository<DailyConsumption>
  */
 #[AsRepository(entityClass: DailyConsumption::class)]
-class DailyConsumptionRepository extends ServiceEntityRepository
+final class DailyConsumptionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
